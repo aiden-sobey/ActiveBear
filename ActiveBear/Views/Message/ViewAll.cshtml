@@ -1,0 +1,37 @@
+﻿@page
+@{
+    var channels = ViewBag.Channels as List<Channel>;
+    var users = ViewBag.Users as List<User>;
+}
+
+<h2>State Overview</h2>
+
+Channels
+<ul>
+    @foreach(var channel in channels)
+    {
+        <li>@channel.Title</li>
+        <ul>
+            <li>Id: @channel.Id</li>
+            <li>Status: @channel.Status</li>
+            <li>Messages:</li>
+            <ul>
+                @if (channel.Messages != null)
+                {
+                    @foreach (var message in channel.Messages)
+                    {
+                        <li>@message.Sender: @message.EncryptedContents</li>
+                    }
+                }
+            </ul>
+        </ul>
+    }
+</ul>
+
+Users
+<ul>
+    @foreach (var user in users)
+    {
+        <li>@user.Name</li>
+    }
+</ul>
