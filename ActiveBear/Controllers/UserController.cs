@@ -32,7 +32,13 @@ namespace ActiveBear.Controllers
         [HttpPost]
         public IActionResult Login(User user)
         {
-            return View();
+            var existingUser = _context.Users.Where(u => u.Name == user.Name &&
+                                                    u.Password == user.Password).FirstOrDefault();
+
+            if (existingUser == null)
+                return View(); //TODO: show error as necessary here
+            else
+                return Redirect("/Message/ViewAll"); //TODO: pass along success login message?
         }
 
         [HttpPost]
@@ -47,7 +53,6 @@ namespace ActiveBear.Controllers
                 return NotFound();
 
             var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description, _context);
-            ViewBag.SignupStatus = "Successful";
             if (newUser != null)
                 return Redirect("/User/Login");
             else

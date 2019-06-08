@@ -8,11 +8,11 @@ namespace ActiveBear.Models
         [Key]
         public Guid Id { get; set; }
         [Required]
-        public Guid Sender { get; set; }
+        public string Sender { get; set; }
         [Required]
         public Guid Channel { get; set; }
+        [Required]
         public string EncryptedContents { get; set; }
-
         [DataType(DataType.DateTime)]
         public DateTime SendDate { get; set; }
 

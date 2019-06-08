@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ActiveBear.Models;
 
 namespace ActiveBear.Services
@@ -8,6 +9,9 @@ namespace ActiveBear.Services
         public static User CreateUser(string name, string password, string description, ActiveBearContext context)
         {
             if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(password))
+                return null;
+
+            if (context.Users.Where(u => u.Name == name).Any())
                 return null;
 
             var newUser = new User

@@ -7,11 +7,9 @@ namespace ActiveBear.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public User User { get; set; }
-        public Channel Channel { get; set; }
+        public string User { get; set; }
+        public Guid Channel { get; set; }
         public string UserEncryptedKey { get; set; }
-
-        public ChannelAuth() { }
 
         public string RawKey(string userPassword)
         {

@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using Microsoft.EntityFrameworkCore;
 namespace ActiveBear.Models
 {
@@ -12,4 +12,4 @@ namespace ActiveBear.Models
 
         public DbSet<Channel> Channel { get; set; }
     }
-}
+}*/ //TODO: delet this file

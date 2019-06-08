@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ActiveBear.Messages;
 using System.ComponentModel.DataAnnotations;
 
 namespace ActiveBear.Models
@@ -7,19 +8,16 @@ namespace ActiveBear.Models
     public class User
     {
         [Key]
-        public Guid Id { get; set; }
-        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-
-        [DataType(DataType.Password)][Required]
+        [Required, DataType(DataType.Password), MinLength(8)]
         public string Password { get; set; }
-        public List<ChannelAuth> ChannelAuths { get; set; }
 
-        public User()
+        public User() { }
+
+        public List<ChannelAuth> GetAuthorisedChannels()
         {
-            Id = Guid.NewGuid();
-            ChannelAuths = new List<ChannelAuth>();
+            return new List<ChannelAuth>();
         }
     }
 }

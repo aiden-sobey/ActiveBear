@@ -30,7 +30,6 @@ namespace ActiveBear.Controllers
 
         public IActionResult Engage(Guid? id)
         {
-            // Check the passed ID represents a valid channel
             Channel activeChannel;
 
             if (id == null)
@@ -41,17 +40,18 @@ namespace ActiveBear.Controllers
             {
                 case 0:
                     return NotFound();
+
                 case 1:
                     activeChannel = channels.FirstOrDefault();
                     break;
+
                 default:
-                    // This would actually be a very serious error - GUID double up
                     return NotFound(); 
             }
 
             // Check the current user is authorised
-            var currentUser = _context.Users.FirstOrDefault();
-            if (!activeChannel.AuthorisedUsers.Contains(currentUser))
+            var currentUser = _context.Users.FirstOrDefault(); //TODO: use actual user
+            if (!ChannelAuthService.AuthedUsersFor(activeChannel, _context).Contains(currentUser))
                 return NotFound();
 
             // Gather relevant messages
@@ -60,7 +60,7 @@ namespace ActiveBear.Controllers
             // Push our information to the view
             ViewBag.Channel = activeChannel;
             ViewBag.Messages = channelMessages;
-            ViewBag.UserNames = ChannelService.LinkMessagesToUsers(channelMessages, _context);
+            ViewBag.UserNames = MessageService.LinkMessagesToUsers(channelMessages, _context);
 
             return View();
         }

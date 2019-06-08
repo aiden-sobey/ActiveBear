@@ -11,7 +11,6 @@ namespace ActiveBear.Models
         [Key]
         public Guid Id { get; set; }
         public string Title { get; set; }
-        public List<User> AuthorisedUsers { get; set; } //TODO: should probably be a method on ChannelAuths...
         public string Status { get; set; }
 
         // Encryption properties
@@ -20,26 +19,25 @@ namespace ActiveBear.Models
         // Audit properties
         [DataType(DataType.DateTime)]
         public DateTime CreateDate { get; set; }
-        public User CreateUser { get; set; }
+        public string CreateUser { get; set; }
         private ActiveBearContext _context;
 
         public Channel(ActiveBearContext context)
         {
             Id = Guid.NewGuid();
-            AuthorisedUsers = new List<User>();
-            Status = "ACTIVE"; //TODO: global constant this
+            Status = Constants.Channel.Status.Active;
             CreateDate = DateTime.Now;
             _context = context;
+        }
+
+        public List<User> AuthorisedUsers()
+        {
+            return new List<User>();
         }
 
         public List<Message> GetMessages()
         {
             return _context.Messages.Where(m => m.Channel == Id).ToList();
-        }
-
-        public int MemberCount()
-        {
-            return AuthorisedUsers.Count;
         }
     }
 }

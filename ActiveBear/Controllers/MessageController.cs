@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Controllers
 {
+    [Bind("Id,Sender,Channel,EncryptedContents,DateTime")]
     public class MessageController : Controller
     {
         private readonly ActiveBearContext _context;

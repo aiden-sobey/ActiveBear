@@ -13,7 +13,7 @@ Channels
     {
         <li>@channel.Title</li>
         <ul>
-            <li>Id: @channel.Id</li>
+            <li><a asp-controller="Channel" asp-action="Engage" asp-route-id="@channel.Id">@channel.Id</a></li>
             <li>Status: @channel.Status</li>
             <li>Messages:</li>
             <ul>
@@ -30,9 +30,8 @@ Users
 <ul>
     @foreach (var user in users)
     {
-        <li>@user.Id</li>
+        <li>@user.Name</li>
         <ul>
-            <li>Name: @user.Name</li>
             <li>Description: @user.Description</li>
             <li>Password: @user.Password</li>
         </ul>

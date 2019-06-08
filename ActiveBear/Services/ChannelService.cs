@@ -22,9 +22,8 @@ namespace ActiveBear.Services
             var channel = new Channel(context)
             {
                 Title = title,
-                AuthorisedUsers = new List<User> { CurrentUser() },
                 KeyHash = HashKey(rawKey),
-                CreateUser = CurrentUser(),
+                CreateUser = CurrentUser(context).Name
             };
 
             rawKey = String.Empty;
@@ -35,24 +34,10 @@ namespace ActiveBear.Services
             return channel;
         }
 
-        public static Dictionary<Message, User> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)
-        {
-            var link = new Dictionary<Message, User>();
-
-            foreach (var message in messages)
-            {
-                var user = context.Users.Where(u => u.Id == message.Sender).FirstOrDefault();
-                if (user != null)
-                    link.Add(message, user);
-            }
-
-            return link;
-        }
-
         // TODO: Make this some global context-y thing
-        private static User CurrentUser()
+        private static User CurrentUser(ActiveBearContext context)
         {
-            return new User();
+            return context.Users.FirstOrDefault();
         }
 
         private static string HashKey(string rawKey)

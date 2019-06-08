@@ -23,7 +23,7 @@ namespace ActiveBear.Migrations
 
                     b.Property<DateTime>("CreateDate");
 
-                    b.Property<Guid?>("CreateUserId");
+                    b.Property<string>("CreateUser");
 
                     b.Property<string>("KeyHash");
 
@@ -33,8 +33,6 @@ namespace ActiveBear.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreateUserId");
-
                     b.ToTable("Channels");
                 });
 
@@ -43,17 +41,13 @@ namespace ActiveBear.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("ChannelId");
+                    b.Property<Guid>("Channel");
+
+                    b.Property<string>("User");
 
                     b.Property<string>("UserEncryptedKey");
 
-                    b.Property<Guid?>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ChannelId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ChannelAuths");
                 });
@@ -65,11 +59,13 @@ namespace ActiveBear.Migrations
 
                     b.Property<Guid>("Channel");
 
-                    b.Property<string>("EncryptedContents");
+                    b.Property<string>("EncryptedContents")
+                        .IsRequired();
 
                     b.Property<DateTime>("SendDate");
 
-                    b.Property<Guid>("Sender");
+                    b.Property<string>("Sender")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -78,49 +74,17 @@ namespace ActiveBear.Migrations
 
             modelBuilder.Entity("ActiveBear.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("ChannelId");
-
                     b.Property<string>("Description");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
 
                     b.Property<string>("Password")
                         .IsRequired();
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChannelId");
+                    b.HasKey("Name");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ActiveBear.Models.Channel", b =>
-                {
-                    b.HasOne("ActiveBear.Models.User", "CreateUser")
-                        .WithMany()
-                        .HasForeignKey("CreateUserId");
-                });
-
-            modelBuilder.Entity("ActiveBear.Models.ChannelAuth", b =>
-                {
-                    b.HasOne("ActiveBear.Models.Channel", "Channel")
-                        .WithMany()
-                        .HasForeignKey("ChannelId");
-
-                    b.HasOne("ActiveBear.Models.User", "User")
-                        .WithMany("ChannelAuths")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ActiveBear.Models.User", b =>
-                {
-                    b.HasOne("ActiveBear.Models.Channel")
-                        .WithMany("AuthorisedUsers")
-                        .HasForeignKey("ChannelId");
                 });
 #pragma warning restore 612, 618
         }

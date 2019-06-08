@@ -62,7 +62,7 @@ namespace ActiveBear
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Message}/{action=ViewAll}/{id?}");
+                    template: "{controller=User}/{action=Login}/{id?}");
             });
         }
     }

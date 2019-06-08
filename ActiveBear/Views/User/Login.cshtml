@@ -1,3 +1,27 @@
-﻿@page
+﻿@model User
 @{
 }
+<div class="registrationPage">
+    <h2>Log in to ActiveBear</h2>
+    <h3>Encrypted Messaging</h3>
+
+    <form method="post" asp-controller="User" asp-action="Login">
+
+        <div class="nameInput">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+
+        <div class="passwordInput">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+
+        <div>
+            <input type="submit" value="Login" />
+        </div>
+
+    </form>
+</div>
