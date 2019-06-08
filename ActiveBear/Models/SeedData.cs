@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ActiveBear.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,76 +16,23 @@ namespace ActiveBear.Models
                     DbContextOptions<ActiveBearContext>>()))
             {
                 // Look for any messages.
-                if (context.Message.Any())
+                if (context.Messages.Any())
                     return;   // DB has been seeded
 
                 // Create Users
+                var userOne = UserService.CreateUser("Aiden", "admin", "The admin of the site", context);
+                var userTwo = UserService.CreateUser("Tom", "NIM", "OG comrade", context);
+                var userThree = UserService.CreateUser("Claudine", "enc", "The GF", context);
 
-                var senderOne = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Aiden",
-                    Description = "Admin guy",
-                    Password = "12",
-                    ChannelAuths = new List<ChannelAuth>()
-                };
-                var senderTwo = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Tom",
-                    Description = "loser power user",
-                    Password = "11",
-                    ChannelAuths = new List<ChannelAuth>()
-                };
-                context.Users.AddRange(senderOne, senderTwo);
-                context.SaveChanges();
-
-                // Create channel
-                var channel = new Channel
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "TCIP",
-                    MemberCount = 2,
-                    AuthorisedUsers = new List<User> { senderOne, senderTwo },
-                    Messages = new List<Message>(),
-                    Status = "ACTIVE",
-                    KeyHash = "pretend_secure_for_now",
-                    CreateDate = DateTime.Now,
-                    CreateUser = senderOne
-                };
-                context.Channels.Add(channel);
+                // Create channels
+                var channel = ChannelService.CreateChannel("TCIP", "activebear", context);
 
                 // Create messages
 
-                context.Message.AddRange(
-                    new Message
-                    {
-                        Id = Guid.NewGuid(),
-                        Sender = senderOne.Id,
-                        Channel = channel.Id,
-                        EncryptedContents = "BigYeet",
-                        SendDate = DateTime.Now
-                    },
-
-                    new Message
-                    {
-                        Id = Guid.NewGuid(),
-                        Sender = senderOne.Id,
-                        Channel = channel.Id,
-                        EncryptedContents = "Example message",
-                        SendDate = DateTime.Now
-                    },
-
-                    new Message
-                    {
-                        Id = Guid.NewGuid(),
-                        Sender = senderTwo.Id,
-                        Channel = channel.Id,
-                        EncryptedContents = "Active bear yo",
-                        SendDate = DateTime.Now
-                    }
-                );
-                context.SaveChanges();
+                var messageOne = MessageService.NewMessage(userOne, channel, "small yeet", context);
+                var messageTwo = MessageService.NewMessage(userTwo, channel, "yeet", context);
+                var messageTre = MessageService.NewMessage(userOne, channel, "bigger yeet", context);
+                var messageQua = MessageService.NewMessage(userThree, channel, "standard message", context);
             }
         }
     }

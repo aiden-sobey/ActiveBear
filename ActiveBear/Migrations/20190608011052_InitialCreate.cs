@@ -8,7 +8,22 @@ namespace ActiveBear.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ChannelAuth",
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Sender = table.Column<Guid>(nullable: false),
+                    Channel = table.Column<Guid>(nullable: false),
+                    EncryptedContents = table.Column<string>(nullable: true),
+                    SendDate = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelAuths",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -18,23 +33,7 @@ namespace ActiveBear.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChannelAuth", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Message",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Sender = table.Column<Guid>(nullable: false),
-                    Channel = table.Column<Guid>(nullable: false),
-                    EncryptedContents = table.Column<string>(nullable: true),
-                    SendDate = table.Column<DateTime>(nullable: false),
-                    ChannelId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.PrimaryKey("PK_ChannelAuths", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,9 +41,9 @@ namespace ActiveBear.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true),
+                    Password = table.Column<string>(nullable: false),
                     ChannelId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -58,7 +57,6 @@ namespace ActiveBear.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Title = table.Column<string>(nullable: true),
-                    MemberCount = table.Column<long>(nullable: false),
                     Status = table.Column<string>(nullable: true),
                     KeyHash = table.Column<string>(nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: false),
@@ -76,13 +74,13 @@ namespace ActiveBear.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChannelAuth_ChannelId",
-                table: "ChannelAuth",
+                name: "IX_ChannelAuths_ChannelId",
+                table: "ChannelAuths",
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChannelAuth_UserId",
-                table: "ChannelAuth",
+                name: "IX_ChannelAuths_UserId",
+                table: "ChannelAuths",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -91,36 +89,23 @@ namespace ActiveBear.Migrations
                 column: "CreateUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Message_ChannelId",
-                table: "Message",
-                column: "ChannelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_ChannelId",
                 table: "Users",
                 column: "ChannelId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ChannelAuth_Channels_ChannelId",
-                table: "ChannelAuth",
+                name: "FK_ChannelAuths_Channels_ChannelId",
+                table: "ChannelAuths",
                 column: "ChannelId",
                 principalTable: "Channels",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ChannelAuth_Users_UserId",
-                table: "ChannelAuth",
+                name: "FK_ChannelAuths_Users_UserId",
+                table: "ChannelAuths",
                 column: "UserId",
                 principalTable: "Users",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Message_Channels_ChannelId",
-                table: "Message",
-                column: "ChannelId",
-                principalTable: "Channels",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -140,10 +125,10 @@ namespace ActiveBear.Migrations
                 table: "Users");
 
             migrationBuilder.DropTable(
-                name: "ChannelAuth");
+                name: "ChannelAuths");
 
             migrationBuilder.DropTable(
-                name: "Message");
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "Channels");

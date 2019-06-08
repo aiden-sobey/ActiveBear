@@ -2,9 +2,10 @@
 @{
     var channels = ViewBag.Channels as List<Channel>;
     var users = ViewBag.Users as List<User>;
+    var messages = ViewBag.Messages as List<Message>;
 }
 
-<h2>State Overview</h2>
+<h2>Site Statistics</h2>
 
 Channels
 <ul>
@@ -16,12 +17,9 @@ Channels
             <li>Status: @channel.Status</li>
             <li>Messages:</li>
             <ul>
-                @if (channel.Messages != null)
+                @foreach (var message in channel.GetMessages())
                 {
-                    @foreach (var message in channel.Messages)
-                    {
-                        <li>@message.Sender: @message.EncryptedContents</li>
-                    }
+                    <li>@message.Sender: @message.EncryptedContents</li>
                 }
             </ul>
         </ul>
@@ -32,6 +30,25 @@ Users
 <ul>
     @foreach (var user in users)
     {
-        <li>@user.Name</li>
+        <li>@user.Id</li>
+        <ul>
+            <li>Name: @user.Name</li>
+            <li>Description: @user.Description</li>
+            <li>Password: @user.Password</li>
+        </ul>
+    }
+</ul>
+
+Messages
+<ul>
+    @foreach (var message in messages)
+    {
+        <li>@message.Id</li>
+        <ul>
+            <li>Channel: @message.Channel</li>
+            <li>Contents: @message.EncryptedContents</li>
+            <li>User: @message.Sender</li>
+        </ul>
+        <br />
     }
 </ul>

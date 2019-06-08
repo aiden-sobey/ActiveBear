@@ -8,13 +8,18 @@ namespace ActiveBear.Models
     {
         [Key]
         public Guid Id { get; set; }
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
 
-        [DataType(DataType.Password)]
+        [DataType(DataType.Password)][Required]
         public string Password { get; set; }
         public List<ChannelAuth> ChannelAuths { get; set; }
 
-        public User() { }
+        public User()
+        {
+            Id = Guid.NewGuid();
+            ChannelAuths = new List<ChannelAuth>();
+        }
     }
 }

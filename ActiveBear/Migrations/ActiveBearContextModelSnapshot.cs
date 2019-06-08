@@ -27,8 +27,6 @@ namespace ActiveBear.Migrations
 
                     b.Property<string>("KeyHash");
 
-                    b.Property<long>("MemberCount");
-
                     b.Property<string>("Status");
 
                     b.Property<string>("Title");
@@ -57,7 +55,7 @@ namespace ActiveBear.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ChannelAuth");
+                    b.ToTable("ChannelAuths");
                 });
 
             modelBuilder.Entity("ActiveBear.Models.Message", b =>
@@ -67,8 +65,6 @@ namespace ActiveBear.Migrations
 
                     b.Property<Guid>("Channel");
 
-                    b.Property<Guid?>("ChannelId");
-
                     b.Property<string>("EncryptedContents");
 
                     b.Property<DateTime>("SendDate");
@@ -77,9 +73,7 @@ namespace ActiveBear.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChannelId");
-
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ActiveBear.Models.User", b =>
@@ -91,9 +85,11 @@ namespace ActiveBear.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Password")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -118,13 +114,6 @@ namespace ActiveBear.Migrations
                     b.HasOne("ActiveBear.Models.User", "User")
                         .WithMany("ChannelAuths")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ActiveBear.Models.Message", b =>
-                {
-                    b.HasOne("ActiveBear.Models.Channel")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChannelId");
                 });
 
             modelBuilder.Entity("ActiveBear.Models.User", b =>

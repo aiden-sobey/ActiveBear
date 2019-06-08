@@ -1,0 +1,17 @@
+﻿@page
+@{
+    var channel = ViewBag.Channel as Channel;
+    var messages = ViewBag.Messages as List<Message>;
+    // TODO: just store the user object instead of their GUID?
+    var userNames = ViewBag.UserNames as Dictionary<Message, User>;
+}
+
+<h2>@channel.Title</h2>
+
+@foreach(var message in messages)
+{
+    <div class="message_container">
+        <div class="message_author">@userNames[message].Name @@ @message.SendDate.ToShortTimeString()</div>
+        <div class="message_contents">@message.EncryptedContents</div>
+    </div>
+}

@@ -28,13 +28,10 @@ namespace ActiveBear.Controllers
 
         public IActionResult ViewAll()
         {
-            ViewBag.Messages = _context.Message.ToList();
+            ViewBag.Messages = _context.Messages.ToList();
             ViewBag.Channels = _context.Channels.ToList();
             ViewBag.Users = _context.Users.ToList();
 
-            ViewBag.Testing = 3;
-            ViewBag.Iterations = 5;
-            ViewBag.Message = "YEET";
             return View();
         }
 
@@ -43,7 +40,7 @@ namespace ActiveBear.Controllers
             if (id == null)
                 return NotFound();
 
-            var message = await _context.Message.FirstOrDefaultAsync(
+            var message = await _context.Messages.FirstOrDefaultAsync(
                 m => m.Id == id);
 
             if (message == null)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace ActiveBear.Models
 {
@@ -10,9 +11,7 @@ namespace ActiveBear.Models
         [Key]
         public Guid Id { get; set; }
         public string Title { get; set; }
-        public List<Message> Messages { get; set; }
-        public List<User> AuthorisedUsers { get; set; }
-        public long MemberCount { get; set; }
+        public List<User> AuthorisedUsers { get; set; } //TODO: should probably be a method on ChannelAuths...
         public string Status { get; set; }
 
         // Encryption properties
@@ -22,12 +21,25 @@ namespace ActiveBear.Models
         [DataType(DataType.DateTime)]
         public DateTime CreateDate { get; set; }
         public User CreateUser { get; set; }
+        private ActiveBearContext _context;
 
-        public Channel()
-        { }
+        public Channel(ActiveBearContext context)
+        {
+            Id = Guid.NewGuid();
+            AuthorisedUsers = new List<User>();
+            Status = "ACTIVE"; //TODO: global constant this
+            CreateDate = DateTime.Now;
+            _context = context;
+        }
 
-        // Methods
+        public List<Message> GetMessages()
+        {
+            return _context.Messages.Where(m => m.Channel == Id).ToList();
+        }
 
-
+        public int MemberCount()
+        {
+            return AuthorisedUsers.Count;
+        }
     }
 }

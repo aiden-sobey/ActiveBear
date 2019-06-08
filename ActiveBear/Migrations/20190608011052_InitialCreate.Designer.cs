@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ActiveBear.Migrations
 {
     [DbContext(typeof(ActiveBearContext))]
-    [Migration("20190605131011_InitialCreate")]
+    [Migration("20190608011052_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,8 +28,6 @@ namespace ActiveBear.Migrations
                     b.Property<Guid?>("CreateUserId");
 
                     b.Property<string>("KeyHash");
-
-                    b.Property<long>("MemberCount");
 
                     b.Property<string>("Status");
 
@@ -59,7 +57,7 @@ namespace ActiveBear.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ChannelAuth");
+                    b.ToTable("ChannelAuths");
                 });
 
             modelBuilder.Entity("ActiveBear.Models.Message", b =>
@@ -69,8 +67,6 @@ namespace ActiveBear.Migrations
 
                     b.Property<Guid>("Channel");
 
-                    b.Property<Guid?>("ChannelId");
-
                     b.Property<string>("EncryptedContents");
 
                     b.Property<DateTime>("SendDate");
@@ -79,9 +75,7 @@ namespace ActiveBear.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChannelId");
-
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ActiveBear.Models.User", b =>
@@ -93,9 +87,11 @@ namespace ActiveBear.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Password")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -120,13 +116,6 @@ namespace ActiveBear.Migrations
                     b.HasOne("ActiveBear.Models.User", "User")
                         .WithMany("ChannelAuths")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ActiveBear.Models.Message", b =>
-                {
-                    b.HasOne("ActiveBear.Models.Channel")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChannelId");
                 });
 
             modelBuilder.Entity("ActiveBear.Models.User", b =>

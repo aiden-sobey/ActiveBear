@@ -9,7 +9,7 @@ namespace ActiveBear.Services
 {
     public static class ChannelService
     {
-        public static Channel CreateChannel(string title, string rawKey)
+        public static Channel CreateChannel(string title, string rawKey, ActiveBearContext context)
         {
             var errors = new List<String>();
 
@@ -19,24 +19,34 @@ namespace ActiveBear.Services
             if (String.IsNullOrEmpty(rawKey))
                 errors.Add("rawKey was empty!!!");
 
-            var channel = new Channel
+            var channel = new Channel(context)
             {
-                Id = Guid.NewGuid(),
                 Title = title,
-                MemberCount = 1,
                 AuthorisedUsers = new List<User> { CurrentUser() },
-                Messages = new List<Message>(),
-                Status = "ACTIVE",
                 KeyHash = HashKey(rawKey),
-                CreateDate = DateTime.Now,
-                CreateUser = CurrentUser()
+                CreateUser = CurrentUser(),
             };
 
             rawKey = String.Empty;
 
-            // TODO: actually create the channel here - i.e. save to DB
+            context.Add(channel);
+            context.SaveChanges();
 
             return channel;
+        }
+
+        public static Dictionary<Message, User> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)
+        {
+            var link = new Dictionary<Message, User>();
+
+            foreach (var message in messages)
+            {
+                var user = context.Users.Where(u => u.Id == message.Sender).FirstOrDefault();
+                if (user != null)
+                    link.Add(message, user);
+            }
+
+            return link;
         }
 
         // TODO: Make this some global context-y thing

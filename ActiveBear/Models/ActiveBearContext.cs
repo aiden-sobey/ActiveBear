@@ -11,9 +11,9 @@ namespace ActiveBear.Models
 
         }
 
-        public DbSet<Message> Message { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Channel> Channels { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<ChannelAuth> ChannelAuth { get; set; }
+        public DbSet<ChannelAuth> ChannelAuths { get; set; }
     }
 }
