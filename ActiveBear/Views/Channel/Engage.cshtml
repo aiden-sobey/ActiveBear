@@ -4,10 +4,11 @@
     var messages = ViewBag.Messages as List<Message>;
     var userNames = ViewBag.UserNames as Dictionary<Message, User>;
 }
+@model Message
 
 <h2>@channel.Title</h2>
 
-@foreach(var message in messages)
+@foreach (var message in messages)
 {
     <div class="message_container">
         <div class="message_author">@userNames[message].Name @@ @message.SendDate.ToShortTimeString()</div>

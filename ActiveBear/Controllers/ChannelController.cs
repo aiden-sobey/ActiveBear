@@ -17,7 +17,6 @@ namespace ActiveBear.Controllers
             _context = context;
         }
 
-        // GET: /<controller>/
         public IActionResult Index()
         {
             return View();
@@ -36,30 +35,23 @@ namespace ActiveBear.Controllers
             if (id == null)
                 return NotFound();
 
-            var channels = _context.Channels.Where(x => x.Id == id);
-            switch (channels.Count())
-            {
-                case 1:
-                    activeChannel = channels.FirstOrDefault();
-                    break;
-
-                default:
-                    return NotFound(); 
-            }
+            var channel = _context.Channels.Where(x => x.Id == id).FirstOrDefault();
+            if (channel == null)
+                return NotFound();
 
             // Check the current user is authorised
             var currentUser = CookieService.CurrentUser(_context, Request);
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
 
-            if (!ChannelAuthService.AuthedUsersFor(activeChannel, _context).Contains(currentUser))
+            if (!ChannelAuthService.AuthedUsersFor(channel, _context).Contains(currentUser))
                 return Redirect(Constants.Routes.Home);
 
             // Gather relevant messages
-            var channelMessages = _context.Messages.Where(m => m.Channel == id).ToList();
+            var channelMessages = ChannelService.MessagesFor(channel, _context);
 
             // Push our information to the view
-            ViewBag.Channel = activeChannel;
+            ViewBag.Channel = channel;
             ViewBag.Messages = channelMessages;
             ViewBag.UserNames = MessageService.LinkMessagesToUsers(channelMessages, _context);
 

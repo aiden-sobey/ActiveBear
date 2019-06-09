@@ -33,6 +33,7 @@ namespace ActiveBear.Controllers
         [HttpPost]
         public IActionResult Login(User user)
         {
+            CookieService.DeleteUserCookie(Response);
             var existingUser = _context.Users.Where(u => u.Name == user.Name &&
                                                     u.Password == user.Password).FirstOrDefault();
 
@@ -43,7 +44,7 @@ namespace ActiveBear.Controllers
                 return View();
             }
 
-            CookieService.GenerateUserCookie(user, Response);
+            CookieService.GenerateUserCookie(existingUser, Response);
 
             return Redirect(Constants.Routes.Home);
         }
@@ -51,13 +52,14 @@ namespace ActiveBear.Controllers
         [HttpPost]
         public IActionResult Register(User userRequest)
         {
+            CookieService.DeleteUserCookie(Response);
             // TODO: handle proper errors here
-            if (_context.Users.Where(u => u.Name == userRequest.Name).Any())
-                return NotFound();
-
             if (String.IsNullOrEmpty(userRequest.Name) ||
                 String.IsNullOrEmpty(userRequest.Password))
-                return NotFound();
+                return View();
+
+            if (_context.Users.Where(u => u.Name == userRequest.Name).Any())
+                return View();
 
             var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description, _context);
             if (newUser != null)

@@ -77,6 +77,8 @@ namespace ActiveBear.Migrations
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<Guid>("CookieId");
+
                     b.Property<string>("Description");
 
                     b.Property<string>("Password")

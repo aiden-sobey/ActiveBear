@@ -17,7 +17,7 @@ namespace ActiveBear.Services
             cookieOption.Expires = DateTime.Now.AddDays(7);
 
             response.Cookies.Delete(Constants.User.CookieKey);
-            response.Cookies.Append(Constants.User.CookieKey, user.Name, cookieOption);
+            response.Cookies.Append(Constants.User.CookieKey, user.CookieId.ToString(), cookieOption);
         }
 
         public static User CurrentUser(ActiveBearContext context, HttpRequest request)
@@ -26,8 +26,15 @@ namespace ActiveBear.Services
 
             if (request.Cookies.ContainsKey(Constants.User.CookieKey))
             {
-                var userName = request.Cookies[Constants.User.CookieKey];
-                currentUser = context.Users.Where(u => u.Name == userName).FirstOrDefault();
+                try
+                {
+                    var requestCookie = Guid.Parse(request.Cookies[Constants.User.CookieKey]);
+                    currentUser = context.Users.Where(u => u.CookieId == requestCookie).FirstOrDefault();
+                }
+                catch
+                {
+                    // Invalid cookie passed in
+                }
             }
 
             return currentUser;

@@ -35,6 +35,11 @@ namespace ActiveBear.Services
             return channel;
         }
 
+        public static List<Message> MessagesFor(Channel channel, ActiveBearContext context)
+        {
+            return context.Messages.Where(m => m.Channel == channel.Id).ToList();
+        }
+
         private static string HashKey(string rawKey)
         {
             // TODO SHA-1 Hash here
