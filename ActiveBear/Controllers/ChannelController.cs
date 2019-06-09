@@ -50,9 +50,12 @@ namespace ActiveBear.Controllers
             }
 
             // Check the current user is authorised
-            var currentUser = _context.Users.FirstOrDefault(); //TODO: use actual user
+            var currentUser = CookieService.CurrentUser(_context, Request);
+            if (currentUser == null)
+                return Redirect(Constants.Routes.Login);
+
             if (!ChannelAuthService.AuthedUsersFor(activeChannel, _context).Contains(currentUser))
-                return NotFound();
+                return Redirect(Constants.Routes.Home);
 
             // Gather relevant messages
             var channelMessages = _context.Messages.Where(m => m.Channel == id).ToList();

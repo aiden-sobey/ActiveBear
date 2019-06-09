@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +16,11 @@ namespace ActiveBear.Controllers
         }
 
         [HttpGet]
-        public ViewResult Login()
+        public IActionResult Login()
         {
+            if (CookieService.CurrentUser(_context, Request) != null)
+                return Redirect(Constants.Routes.Home);
+
             return View();
         }
 
@@ -35,10 +36,14 @@ namespace ActiveBear.Controllers
             var existingUser = _context.Users.Where(u => u.Name == user.Name &&
                                                     u.Password == user.Password).FirstOrDefault();
 
+
             if (existingUser == null)
                 return View(); //TODO: show error as necessary here
-            else
-                return Redirect("/Message/ViewAll"); //TODO: pass along success login message?
+
+            var userCookie = CookieService.GenerateUserCookie();
+            Response.Cookies.Append(Constants.User.CookieKey, user.Name, userCookie);
+
+            return Redirect(Constants.Routes.Home);
         }
 
         [HttpPost]
@@ -54,7 +59,7 @@ namespace ActiveBear.Controllers
 
             var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description, _context);
             if (newUser != null)
-                return Redirect("/User/Login");
+                return Redirect(Constants.Routes.Login);
             else
                 return View(); //TODO: display relevant error
         }

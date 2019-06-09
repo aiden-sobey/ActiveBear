@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 using ActiveBear.Models;
 using Microsoft.EntityFrameworkCore;
+using ActiveBear.Services;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,6 +30,12 @@ namespace ActiveBear.Controllers
 
         public IActionResult ViewAll()
         {
+            var currentUser = CookieService.CurrentUser(_context, Request);
+
+            if (currentUser == null)
+                return Redirect(Constants.Routes.Login);
+
+            ViewBag.CurrentUser = currentUser;
             ViewBag.Messages = _context.Messages.ToList();
             ViewBag.Channels = _context.Channels.ToList();
             ViewBag.Users = _context.Users.ToList();

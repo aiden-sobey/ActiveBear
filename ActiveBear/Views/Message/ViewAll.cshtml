@@ -3,9 +3,11 @@
     var channels = ViewBag.Channels as List<Channel>;
     var users = ViewBag.Users as List<User>;
     var messages = ViewBag.Messages as List<Message>;
+    var currentUser = ViewBag.CurrentUser as User;
 }
 
-<h2>Site Statistics</h2>
+<h3>Welcome back @currentUser.Name</h3>
+<h5>Site Overview</h5>
 
 Channels
 <ul>
