@@ -36,12 +36,14 @@ namespace ActiveBear.Controllers
             var existingUser = _context.Users.Where(u => u.Name == user.Name &&
                                                     u.Password == user.Password).FirstOrDefault();
 
-
             if (existingUser == null)
-                return View(); //TODO: show error as necessary here
+            {
+                // TODO: figure out how to pass an error here
+                ViewBag.LoginError = "A user with those details was not found.";
+                return View();
+            }
 
-            var userCookie = CookieService.GenerateUserCookie();
-            Response.Cookies.Append(Constants.User.CookieKey, user.Name, userCookie);
+            CookieService.GenerateUserCookie(user, Response);
 
             return Redirect(Constants.Routes.Home);
         }
@@ -62,6 +64,12 @@ namespace ActiveBear.Controllers
                 return Redirect(Constants.Routes.Login);
             else
                 return View(); //TODO: display relevant error
+        }
+
+        public IActionResult Logout()
+        {
+            CookieService.DeleteUserCookie(Response);
+            return Redirect(Constants.Routes.Login);
         }
     }
 }

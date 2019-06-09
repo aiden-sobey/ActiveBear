@@ -10,12 +10,14 @@ namespace ActiveBear.Services
 {
     public static class CookieService
     {
-        public static CookieOptions GenerateUserCookie()
+        public static void GenerateUserCookie(User user, HttpResponse response)
         {
             var cookieOption = new CookieOptions();
             cookieOption.IsEssential = true;
             cookieOption.Expires = DateTime.Now.AddDays(7);
-            return cookieOption;
+
+            response.Cookies.Delete(Constants.User.CookieKey);
+            response.Cookies.Append(Constants.User.CookieKey, user.Name, cookieOption);
         }
 
         public static User CurrentUser(ActiveBearContext context, HttpRequest request)
@@ -29,6 +31,11 @@ namespace ActiveBear.Services
             }
 
             return currentUser;
+        }
+
+        public static void DeleteUserCookie(HttpResponse response)
+        {
+            response.Cookies.Delete(Constants.User.CookieKey);
         }
     }
 }

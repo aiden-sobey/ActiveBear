@@ -25,7 +25,7 @@ namespace ActiveBear.Models
                 var userThree = UserService.CreateUser("Claudine", "enc", "The GF", context);
 
                 // Create channels
-                var channel = ChannelService.CreateChannel("TCIP", "activebear", context);
+                var channel = ChannelService.CreateChannel("TCIP", "activebear", context, userOne);
 
                 // Create messages
 

@@ -25,7 +25,8 @@ namespace ActiveBear.Controllers
 
         public void CreateChannel(string title, string key)
         {
-            var channel = ChannelService.CreateChannel(title, key, _context);
+            var currentUser = CookieService.CurrentUser(_context, Request);
+            var channel = ChannelService.CreateChannel(title, key, _context, currentUser);
         }
 
         public IActionResult Engage(Guid? id)
@@ -38,9 +39,6 @@ namespace ActiveBear.Controllers
             var channels = _context.Channels.Where(x => x.Id == id);
             switch (channels.Count())
             {
-                case 0:
-                    return NotFound();
-
                 case 1:
                     activeChannel = channels.FirstOrDefault();
                     break;

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 
 namespace ActiveBear.Services
 {
     public static class ChannelService
     {
-        public static Channel CreateChannel(string title, string rawKey, ActiveBearContext context)
+        public static Channel CreateChannel(string title, string rawKey, ActiveBearContext context, User createUser)
         {
             var errors = new List<String>();
 
@@ -23,7 +24,7 @@ namespace ActiveBear.Services
             {
                 Title = title,
                 KeyHash = HashKey(rawKey),
-                CreateUser = CurrentUser(context).Name
+                CreateUser = createUser.Name
             };
 
             rawKey = String.Empty;
@@ -32,12 +33,6 @@ namespace ActiveBear.Services
             context.SaveChanges();
 
             return channel;
-        }
-
-        // TODO: Make this some global context-y thing
-        private static User CurrentUser(ActiveBearContext context)
-        {
-            return context.Users.FirstOrDefault();
         }
 
         private static string HashKey(string rawKey)
