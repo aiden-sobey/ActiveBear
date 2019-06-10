@@ -15,7 +15,7 @@ Channels
     {
         <li>@channel.Title</li>
         <ul>
-            <li><a asp-controller="Channel" asp-action="Engage" asp-route-id="@channel.Id">@channel.Id</a></li>
+            <li><a asp-controller="ChannelAuth" asp-action="AuthUserToChannel" asp-route-id="@channel.Id">@channel.Id</a></li>
             <li>Status: @channel.Status</li>
             <li>Messages:</li>
             <ul>

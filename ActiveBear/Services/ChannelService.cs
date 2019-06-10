@@ -23,7 +23,7 @@ namespace ActiveBear.Services
             var channel = new Channel(context)
             {
                 Title = title,
-                KeyHash = HashKey(rawKey),
+                KeyHash = rawKey, //TODO some encrytion here
                 CreateUser = createUser.Name
             };
 
@@ -38,12 +38,6 @@ namespace ActiveBear.Services
         public static List<Message> MessagesFor(Channel channel, ActiveBearContext context)
         {
             return context.Messages.Where(m => m.Channel == channel.Id).ToList();
-        }
-
-        private static string HashKey(string rawKey)
-        {
-            // TODO SHA-1 Hash here
-            return String.Empty;
         }
     }
 }

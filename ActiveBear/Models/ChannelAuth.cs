@@ -9,12 +9,12 @@ namespace ActiveBear.Models
         public Guid Id { get; set; }
         public string User { get; set; }
         public Guid Channel { get; set; }
-        public string UserEncryptedKey { get; set; }
+        [Required]
+        public string HashedKey { get; set; }
 
-        public string RawKey(string userPassword)
+        public ChannelAuth()
         {
-            // TODO: decryption here
-            return UserEncryptedKey;
+            Id = Guid.NewGuid();
         }
     }
 }

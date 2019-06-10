@@ -43,9 +43,10 @@ namespace ActiveBear.Migrations
 
                     b.Property<Guid>("Channel");
 
-                    b.Property<string>("User");
+                    b.Property<string>("HashedKey")
+                        .IsRequired();
 
-                    b.Property<string>("UserEncryptedKey");
+                    b.Property<string>("User");
 
                     b.HasKey("Id");
 

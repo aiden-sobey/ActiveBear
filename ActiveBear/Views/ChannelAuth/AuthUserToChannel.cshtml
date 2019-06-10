@@ -1,0 +1,22 @@
+﻿@model ChannelAuth
+@{
+    var channel = ViewBag.Channel as Channel;
+}
+
+<div class="registrationPage">
+    <h2>Authorising access to @channel.Title</h2>
+    <h5>Please enter your shared channel password.</h5>
+
+    <form method="post" asp-controller="ChannelAuth" asp-action="AuthUserToChannel">
+
+        <div class="nameInput">
+            <input asp-for="HashedKey" />
+            <span asp-validation-for="HashedKey"></span>
+        </div>
+
+        <div>
+            <input type="submit" value="Authorise" />
+        </div>
+
+    </form>
+</div>

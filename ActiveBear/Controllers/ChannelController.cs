@@ -30,8 +30,6 @@ namespace ActiveBear.Controllers
 
         public IActionResult Engage(Guid? id)
         {
-            Channel activeChannel;
-
             if (id == null)
                 return NotFound();
 
@@ -44,7 +42,7 @@ namespace ActiveBear.Controllers
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
 
-            if (!ChannelAuthService.AuthedUsersFor(channel, _context).Contains(currentUser))
+            if (!ChannelAuthService.UserIsAuthed(channel, currentUser, _context))
                 return Redirect(Constants.Routes.Home);
 
             // Gather relevant messages

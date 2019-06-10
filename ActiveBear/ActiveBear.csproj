@@ -20,5 +20,6 @@
     <Folder Include="Views\Channel\" />
     <Folder Include="Views\User\" />
     <Folder Include="Constants\" />
+    <Folder Include="Views\ChannelAuth\" />
   </ItemGroup>
 </Project>
