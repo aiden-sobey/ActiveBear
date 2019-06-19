@@ -13,13 +13,27 @@ namespace ActiveBear.Services
             {
                 Sender = sender.Name,
                 Channel = channel.Id,
-                EncryptedContents = encryptedContents
+                EncryptedContents = EncryptionService.AesEncrypt(encryptedContents, channel.KeyHash)
             };
 
             context.Add(newMessage);
             context.SaveChanges();
 
             return newMessage;
+        }
+
+        public static List<Message> ChannelMessages(Channel channel, ActiveBearContext context)
+        {
+            var messages = context.Messages.Where(m => m.Channel == channel.Id).ToList();
+            var key = channel.KeyHash;
+
+            // TODO: Is this encryption pointless if the key is stored in the DB...
+            foreach (var message in messages)
+            {
+                message.EncryptedContents = EncryptionService.AesDecrypt(message.EncryptedContents, key);
+            }
+
+            return messages;
         }
 
         public static Dictionary<Message, User> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)

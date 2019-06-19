@@ -47,6 +47,8 @@ namespace ActiveBear.Controllers
 
             // Gather relevant messages
             var channelMessages = ChannelService.MessagesFor(channel, _context);
+            foreach (var message in channelMessages)
+                message.EncryptedContents = EncryptionService.AesDecrypt(message.EncryptedContents, channel.KeyHash);
 
             // Push our information to the view
             ViewBag.Channel = channel;
