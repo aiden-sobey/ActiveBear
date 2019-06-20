@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ActiveBear.Models;
 
@@ -7,8 +6,10 @@ namespace ActiveBear.Services
 {
     public static class MessageService
     {
-        public static Message NewMessage(User sender, Channel channel, string encryptedContents, ActiveBearContext context)
+        public static Message NewMessage(User sender, Channel channel, string encryptedContents)
         {
+            var context = DbService.NewDbContext();
+
             var newMessage = new Message
             {
                 Sender = sender.Name,

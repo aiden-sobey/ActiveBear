@@ -15,3 +15,17 @@
         <div class="message_contents">@message.EncryptedContents</div>
     </div>
 }
+
+<div class="row">
+		<div class="col-6">&nbsp;</div>
+		<div class="col-6">
+			<ul id="messagesList"></ul>
+		</div>
+</div>
+
+<input type="text", id="messageInput" />
+<input type="button" id="sendButton" value="Send" />
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
+

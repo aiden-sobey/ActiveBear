@@ -12,8 +12,7 @@ namespace ActiveBear.Models
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new ActiveBearContext(
-                serviceProvider.GetRequiredService<
-                    DbContextOptions<ActiveBearContext>>()))
+                serviceProvider.GetRequiredService<DbContextOptions<ActiveBearContext>>()))
             {
                 // Look for any messages.
                 if (context.Messages.Any())
@@ -28,11 +27,10 @@ namespace ActiveBear.Models
                 var channel = ChannelService.CreateChannel("TCIP", "activebear", context, userOne);
 
                 // Create messages
-
-                var messageOne = MessageService.NewMessage(userOne, channel, "small yeet", context);
-                var messageTwo = MessageService.NewMessage(userTwo, channel, "yeet", context);
-                var messageTre = MessageService.NewMessage(userOne, channel, "bigger yeet", context);
-                var messageQua = MessageService.NewMessage(userThree, channel, "standard message", context);
+                var messageOne = MessageService.NewMessage(userOne, channel, "small yeet");
+                var messageTwo = MessageService.NewMessage(userTwo, channel, "yeet");
+                var messageTre = MessageService.NewMessage(userOne, channel, "bigger yeet");
+                var messageQua = MessageService.NewMessage(userThree, channel, "standard message");
             }
         }
     }
