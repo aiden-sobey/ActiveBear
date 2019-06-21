@@ -2,6 +2,10 @@
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
+// Runtime variables
+var currentUser = document.cookie.split(" User=")[1].split(" ")[0];
+var currentChannel = window.location.href.split("/Channel/Engage/")[1].substring(0, 36);
+
 //Disable send button until connection is established
 var sendButton = document.getElementById("sendButton");
 sendButton.disabled = true;
@@ -10,9 +14,8 @@ sendButton.disabled = true;
 
 // Send
 document.getElementById("sendButton").addEventListener("click", function (event) {
-	// TODO: check if empty
     var message = document.getElementById("messageInput").value;
-    var messagePacket = GenerateMessagePacket("Aiden", "TCIP", message);
+    var messagePacket = GenerateMessagePacket(message);
     connection.invoke("SendMessage", messagePacket).catch(function (err) {
         return console.error(err.toString());
     });
@@ -21,19 +24,22 @@ document.getElementById("sendButton").addEventListener("click", function (event)
 
 // Receive
 connection.on("ReceiveMessage", function (message) {
-    //var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	// Deserialize
+	if (message == null)
+		return;
     var messageBubble = document.createElement("div");
 	messageBubble.setAttribute('class', 'message_contents');
+	//TODO: decrypt
     messageBubble.textContent = message;
+
     document.getElementById("container").appendChild(messageBubble);
 });
 
 // Recieve All
 connection.on("ReceiveAllMessages", function (message) {
-    //var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     var messageBubble = document.createElement("div");
 	messageBubble.setAttribute('class', 'message_contents');
-    messageBubble.textContent = message;
+    messageBubble.textContent = "JavaScript not implemented yet.";
     document.getElementById("container").appendChild(messageBubble);
 });
 
@@ -55,20 +61,20 @@ connection.start().then(function(){
 
 /*		Helper methods		*/
 
-function GenerateMessagePacket(userCookie, channel, message) {
+function GenerateMessagePacket(message) {
 	var packet = {
-		"UserCookie": userCookie,
-		"Channel": channel,
-		"Message": message
+		UserCookie: currentUser,
+		Channel: currentChannel,
+		Message: message
     }
-	return JSON.stringify({ MessagePacket: packet  });
+	return JSON.stringify(packet);
 }
 
 function GenerateChannelPacket() {
 	var packet = {
-		"UserCookie": "Aiden",
-		"Channel": "34c34235-84a1-40fa-840d-19f6ede9a8cc"
+		UserCookie: currentUser,
+		Channel: currentChannel
 	}
 
-	return JSON.stringify({ ChannelPacket: packet });
+	return JSON.stringify(packet);
 }

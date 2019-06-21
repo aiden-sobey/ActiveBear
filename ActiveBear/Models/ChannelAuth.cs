@@ -7,7 +7,7 @@ namespace ActiveBear.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public string User { get; set; }
+        public Guid User { get; set; }
         public Guid Channel { get; set; }
         [Required]
         public string HashedKey { get; set; }

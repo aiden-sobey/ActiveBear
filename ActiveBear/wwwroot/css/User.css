@@ -23,9 +23,11 @@
 .nameInput {
     margin-top: 30px;
     margin-bottom: 20px;
+    color: black;
 }
 
 .passwordInput {
     margin-top: 20px;
     margin-bottom: 20px;
+    color: grey;
 }
