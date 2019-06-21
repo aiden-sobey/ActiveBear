@@ -39,5 +39,14 @@ namespace ActiveBear.Services
         {
             return context.Messages.Where(m => m.Channel == channel.Id).ToList();
         }
+
+        public static List<Message> MessagesFor(string channelPacket)
+        {
+            // TODO: dont hardcode
+            const string hardcodedGuid = "34c34235-84a1-40fa-840d-19f6ede9a8cc";
+            var context = DbService.NewDbContext();
+
+            return context.Messages.Where(m => m.Channel == Guid.Parse(hardcodedGuid)).ToList();
+        }
     }
 }

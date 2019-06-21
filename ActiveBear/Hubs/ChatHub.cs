@@ -8,12 +8,37 @@ namespace ActiveBear.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(string message)
+        // Client has sent us a message
+        // TODO: it needs to be encrypted before this point
+        public async Task SendMessage(string messagePacket)
         {
-            var context = DbService.NewDbContext();
-            var messageCreate = MessageService.NewMessage(context.Users.FirstOrDefault(), context.Channels.FirstOrDefault(), message);
-            
+			if (string.IsNullOrEmpty(messagePacket))
+				return;
+
+            // Create a message from the serialized packet
+            var message = MessageService.NewMessageFromPacket(messagePacket);
+
+            // Send that method to (... all ...) clients
+            // TODO: big security flaw here, check how to send it to only
+            // members of the relevant channel
             await Clients.All.SendAsync("ReceiveMessage", message);
+        }
+
+        // Client has requested all messages for this channel
+        public async Task GetChannelMessages(string channelPacket)
+        {
+            // TODO: Check for a matching channelAuth
+			var channelMessages = ChannelService.MessagesFor(channelPacket);
+
+            // Quick hack
+            foreach (var message in channelMessages)
+			{
+				await Clients.Caller.SendAsync("ReceiveMessage", message.EncryptedContents);
+			}
+
+
+            // TODO: JSONify them...
+			//await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
         }
     }
 }

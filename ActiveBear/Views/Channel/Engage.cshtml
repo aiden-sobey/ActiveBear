@@ -8,20 +8,7 @@
 
 <h2>@channel.Title</h2>
 
-@foreach (var message in messages)
-{
-    <div class="message_container">
-        <div class="message_author">@userNames[message].Name @@ @message.SendDate.ToShortTimeString()</div>
-        <div class="message_contents">@message.EncryptedContents</div>
-    </div>
-}
-
-<div class="row">
-		<div class="col-6">&nbsp;</div>
-		<div class="col-6">
-			<ul id="messagesList"></ul>
-		</div>
-</div>
+<div id="container"  class="message_container" />
 
 <input type="text", id="messageInput" />
 <input type="button" id="sendButton" value="Send" />

@@ -7,7 +7,7 @@ namespace ActiveBear.Services
     {
         public static ActiveBearContext NewDbContext()
         {
-            var connectionString = "Data Source=ActiveBear.db";
+            var connectionString = "Data Source=ActiveBear.db"; // TODO: find how to reference the constant here
             var options = new DbContextOptionsBuilder<ActiveBearContext>();
             options.UseSqlite(connectionString);
             return new ActiveBearContext(options.Options);

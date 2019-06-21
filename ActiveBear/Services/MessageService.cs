@@ -1,26 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using ActiveBear.Models;
 
 namespace ActiveBear.Services
 {
     public static class MessageService
     {
-        public static Message NewMessage(User sender, Channel channel, string encryptedContents)
+        public static Message NewMessage(string senderName, Guid channelId, string encryptedContents)
         {
+            if (string.IsNullOrEmpty(senderName) || channelId == Guid.Empty || string.IsNullOrEmpty(encryptedContents))
+                return null;
+
             var context = DbService.NewDbContext();
 
             var newMessage = new Message
             {
-                Sender = sender.Name,
-                Channel = channel.Id,
-                EncryptedContents = EncryptionService.AesEncrypt(encryptedContents, channel.KeyHash)
+                Sender = senderName,
+                Channel = channelId,
+                EncryptedContents = encryptedContents
             };
 
             context.Add(newMessage);
             context.SaveChanges();
 
             return newMessage;
+        }
+
+        public static Message NewMessageFromPacket(string messagePacket)
+        {
+            // Deserialize messagePacket
+
+            // Construct message from packet
+
+            return new Message();
         }
 
         public static List<Message> ChannelMessages(Channel channel, ActiveBearContext context)
@@ -50,5 +64,18 @@ namespace ActiveBear.Services
 
             return link;
         }
+    }
+
+    [DataContract]
+    class MessagePacket
+    {
+        [DataMember]
+        public string UserCookie;
+
+        [DataMember]
+        public string Channel;
+
+        [DataMember]
+        public string Message;
     }
 }

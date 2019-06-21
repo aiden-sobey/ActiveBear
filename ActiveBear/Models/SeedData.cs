@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ActiveBear.Services;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +26,10 @@ namespace ActiveBear.Models
                 var channel = ChannelService.CreateChannel("TCIP", "activebear", context, userOne);
 
                 // Create messages
-                var messageOne = MessageService.NewMessage(userOne, channel, "small yeet");
-                var messageTwo = MessageService.NewMessage(userTwo, channel, "yeet");
-                var messageTre = MessageService.NewMessage(userOne, channel, "bigger yeet");
-                var messageQua = MessageService.NewMessage(userThree, channel, "standard message");
+                var messageOne = MessageService.NewMessage(userOne.Name, channel.Id, "small yeet");
+                var messageTwo = MessageService.NewMessage(userTwo.Name, channel.Id, "yeet");
+                var messageTre = MessageService.NewMessage(userOne.Name, channel.Id, "bigger yeet");
+                var messageQua = MessageService.NewMessage(userThree.Name, channel.Id, "standard message");
             }
         }
     }
