@@ -1,18 +1,16 @@
 ﻿@page
-@{
-    var channel = ViewBag.Channel as Channel;
-    var messages = ViewBag.Messages as List<Message>;
-    var userNames = ViewBag.UserNames as Dictionary<Message, User>;
-}
+@{}
 @model Message
+<div class="body">
+    <div id="container" class="message_container">
+    </div>
 
-<h2>@channel.Title</h2>
+    <div id="input_holder">
+        <input type="text" , id="messageInput" />
+        <input type="button" id="sendButton" value="Connecting..." disabled="true" />
+    </div>
 
-<div id="container"  class="message_container" />
 
-<input type="text", id="messageInput" />
-<input type="button" id="sendButton" value="Send" />
-
-<script src="~/lib/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/chat.js"></script>
-
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+</div>

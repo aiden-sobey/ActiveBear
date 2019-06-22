@@ -1,55 +1,59 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+/*		Constants		*/
+
+
+// JS-Accessible functions
+var ReceiveMessage = "ReceiveMessage";
+var ReceiveAllMessages= "ReceiveAllMessages";
+
+// Server-side functions
+var SendMessage = "SendMessage";
+var GetChannelMessages = "GetChannelMessages";
 
 // Runtime variables
 var currentUser = document.cookie.split(" User=")[1].split(" ")[0];
 var currentChannel = window.location.href.split("/Channel/Engage/")[1].substring(0, 36);
+var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-//Disable send button until connection is established
+// File elements
 var sendButton = document.getElementById("sendButton");
-sendButton.disabled = true;
+var messageInput = document.getElementById("messageInput");
+var messageContainer = document.getElementById("container");
+
 
 /*		Messages		*/
 
+
 // Send
-document.getElementById("sendButton").addEventListener("click", function (event) {
-    var message = document.getElementById("messageInput").value;
-    var messagePacket = GenerateMessagePacket(message);
-    connection.invoke("SendMessage", messagePacket).catch(function (err) {
-        return console.error(err.toString());
-    });
+sendButton.addEventListener("click", function (event) {
+	PostMessage();
     event.preventDefault();
 });
 
 // Receive
-connection.on("ReceiveMessage", function (message) {
-	// Deserialize
-	if (message == null)
-		return;
-    var messageBubble = document.createElement("div");
-	messageBubble.setAttribute('class', 'message_contents');
-	//TODO: decrypt
-    messageBubble.textContent = message;
-
-    document.getElementById("container").appendChild(messageBubble);
+connection.on(ReceiveMessage, function (message) {
+	CreateMessageBubble(message);
+	updateScroll();
 });
 
 // Recieve All
-connection.on("ReceiveAllMessages", function (message) {
-    var messageBubble = document.createElement("div");
-	messageBubble.setAttribute('class', 'message_contents');
-    messageBubble.textContent = "JavaScript not implemented yet.";
-    document.getElementById("container").appendChild(messageBubble);
+connection.on(ReceiveAllMessages, function (message) {
+	CreateMessageBubble("JavaScript not implemented yet.");
+	updateScroll();
 });
+
 
 /*		Connection		*/
 
+
 connection.start().then(function(){
-    document.getElementById("sendButton").disabled = false;
+	sendButton.disabled = false;
+	sendButton.value = "Send";
 
 	// Get all existing messages
-    connection.invoke("GetChannelMessages", GenerateChannelPacket()).catch(function (err) {
+    connection.invoke(GetChannelMessages, GenerateChannelPacket()).catch(function (err) {
         return console.error(err.toString());
     });
 
@@ -58,8 +62,31 @@ connection.start().then(function(){
 });
 
 
-
 /*		Helper methods		*/
+
+
+function updateScroll(){
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+function PostMessage() {
+	var message = messageInput.value;
+	if (message === null || message === "") return;
+
+    var messagePacket = GenerateMessagePacket(message);
+    connection.invoke(SendMessage, messagePacket).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function CreateMessageBubble(message) {
+	if (message === null || message === "") return;
+
+    var messageBubble = document.createElement("div");
+	messageBubble.setAttribute('class', 'message_contents');
+    messageBubble.textContent = message;
+    messageContainer.appendChild(messageBubble);
+}
 
 function GenerateMessagePacket(message) {
 	var packet = {

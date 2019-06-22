@@ -12,8 +12,7 @@ namespace ActiveBear.Hubs
         // TODO: it needs to be encrypted before this point
         public async Task SendMessage(string messagePacket)
         {
-			if (string.IsNullOrEmpty(messagePacket))
-				return;
+			if (string.IsNullOrEmpty(messagePacket)) return;
 
             // Create a message from the serialized packet
             var message = MessageService.NewMessageFromPacket(messagePacket);
@@ -21,13 +20,12 @@ namespace ActiveBear.Hubs
             // Send that method to (... all ...) clients
             // TODO: big security flaw here, check how to send it to only
             // members of the relevant channel
-            await Clients.All.SendAsync("ReceiveMessage", message);
+            await Clients.All.SendAsync("ReceiveMessage", message.EncryptedContents);
         }
 
         // Client has requested all messages for this channel
         public async Task GetChannelMessages(string channelPacket)
         {
-            // TODO: Check for a matching channelAuth
 			var channelMessages = ChannelService.MessagesFor(channelPacket);
 
             // Quick hack
@@ -36,8 +34,6 @@ namespace ActiveBear.Hubs
 				await Clients.Caller.SendAsync("ReceiveMessage", message.EncryptedContents);
 			}
 
-
-            // TODO: JSONify them...
 			//await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
         }
     }

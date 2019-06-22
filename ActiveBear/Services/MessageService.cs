@@ -29,21 +29,16 @@ namespace ActiveBear.Services
             return newMessage;
         }
 
-        public static string NewMessageFromPacket(string messagePacket)
+        public static Message NewMessageFromPacket(string messagePacket)
         {
-            // Deserialize messagePacket
             var context = DbService.NewDbContext();
+            var decodedMessage = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
 
-            var message = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
-            var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == message.Channel);
-            var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == message.UserCookie);
-            if (channel == null || user == null)
-                return string.Empty;
+            var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedMessage.Channel);
+            var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedMessage.UserCookie);
+            if (channel == null || user == null) return new Message();
 
-            var generatedMessage = NewMessage(user.Name, channel.Id, message.Message);
-
-            return generatedMessage.EncryptedContents;
-            // Construct message from packet
+            return NewMessage(user.Name, channel.Id, decodedMessage.Message);
         }
 
         public static List<Message> ChannelMessages(Channel channel, ActiveBearContext context)

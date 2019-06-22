@@ -24,6 +24,7 @@ namespace ActiveBear.Models
 
                 // Create channels
                 var channel = ChannelService.CreateChannel("TCIP", "activebear", context, userOne);
+                var channelTwo = ChannelService.CreateChannel("SecretRoom", "starcraft", context, userTwo);
 
                 // Create messages
                 var messageOne = MessageService.NewMessage(userOne.Name, channel.Id, "small yeet");
