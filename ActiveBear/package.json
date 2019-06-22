@@ -1,0 +1,23 @@
+{
+  "name": "activebear",
+  "version": "1.0.0",
+  "description": "",
+  "main": "chat.js",
+  "dependencies": {
+    "aes-js": "^3.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aiden-sobey/ActiveBear.git"
+  },
+  "author": "Aiden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aiden-sobey/ActiveBear/issues"
+  },
+  "homepage": "https://github.com/aiden-sobey/ActiveBear#readme"
+}
