@@ -1,6 +1,7 @@
 ﻿.message_container {
     width: 100%;
-    overflow: hidden;
+    overflow: auto;
+    height: 700px;
 }
 
 .message_author {
@@ -9,6 +10,10 @@
     width: 100px;
     height: 100%;
     vertical-align: middle;
+}
+
+#input_holder {
+    padding-top: 15px;
 }
 
 .message_contents {

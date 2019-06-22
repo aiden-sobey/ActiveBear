@@ -7,11 +7,13 @@ namespace ActiveBear.Services
 {
     public static class ChannelAuthService
     {
-        public static void CreateAuth(Channel channel, User user, ActiveBearContext context)
+        public static void CreateAuth(Channel channel, User user)
         {
+            var context = DbService.NewDbContext();
+
             var channelAuth = new ChannelAuth
             {
-                User = user.Name,
+                User = user.CookieId,
                 Channel = channel.Id,
                 HashedKey = channel.KeyHash
             };
@@ -20,25 +22,31 @@ namespace ActiveBear.Services
             context.SaveChanges();
         }
 
-        public static bool UserIsAuthed(Channel channel, User user, ActiveBearContext context)
+        public static bool UserIsAuthed(Channel channel, User user)
         {
-            if (UsersAuthedFor(channel, context).Contains(user))
-                return true;
-            else
+            if (channel == null || user == null)
                 return false;
+
+            var context = DbService.NewDbContext();
+            var auth = context.ChannelAuths.FirstOrDefault(au => au.Channel == channel.Id && au.User == user.CookieId);
+
+            return auth != null;
         }
 
-        private static List<User> UsersAuthedFor(Channel channel, ActiveBearContext context)
+        private static List<User> UsersAuthedFor(Channel channel)
         {
+            var context = DbService.NewDbContext();
+
             // Get relevant auths
             var channelAuths = context.ChannelAuths.Where(a => a.Channel == channel.Id).ToList();
-            var authedUserNames = channelAuths.Select(c => c.User).ToList();
+            var authedCookies = channelAuths.Select(c => c.User).ToList();
             var authedUsers = new List<User>();
 
-            foreach(var name in authedUserNames)
+            foreach(var cookie in authedCookies)
             {
-                var user = context.Users.Where(u => u.Name == name).FirstOrDefault();
-                authedUsers.Add(user);
+                var user = context.Users.Where(u => u.CookieId == cookie).FirstOrDefault();
+                if (user != null)
+                    authedUsers.Add(user);
             }
 
             return authedUsers;

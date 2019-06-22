@@ -28,7 +28,7 @@ namespace ActiveBear.Controllers
             if (channel == null || currentUser == null)
                 return NotFound();
 
-            if (ChannelAuthService.UserIsAuthed(channel, currentUser, _context))
+            if (ChannelAuthService.UserIsAuthed(channel, currentUser))
             {
                 return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id.ToString());
             }
@@ -51,7 +51,7 @@ namespace ActiveBear.Controllers
 
             if (channelAuth.HashedKey == channel.KeyHash)
             {
-                ChannelAuthService.CreateAuth(channel, currentUser, _context);
+                ChannelAuthService.CreateAuth(channel, currentUser);
                 return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id);
             }
 

@@ -8,10 +8,10 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Text;
 
-namespace ActiveBear.Services
+namespace ActiveBear.SerBvices
 {
     // Code is taken from https://stackoverflow.com/questions/273452/using-aes-encryption-in-c-sharp
-
+    /*
     public static class EncryptionService
     {
         private static int _iterations = 2;
@@ -65,6 +65,10 @@ namespace ActiveBear.Services
         }
         public static string AesDecrypt<T>(string value, string password) where T : SymmetricAlgorithm, new()
         {
+            // TODO need much better error handling here - if we use it
+            if (string.IsNullOrEmpty(value) || !value.EndsWith("="))
+                return "Invalid input- string isn't AES encrypted.";
+
             byte[] vectorBytes = Encoding.ASCII.GetBytes(_vector);
             byte[] saltBytes = Encoding.ASCII.GetBytes(_salt);
             byte[] valueBytes = Convert.FromBase64String(value);
@@ -103,4 +107,5 @@ namespace ActiveBear.Services
             return Encoding.UTF8.GetString(decrypted, 0, decryptedByteCount);
         }
     }
+    */
 }

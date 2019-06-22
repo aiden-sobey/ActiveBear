@@ -1,17 +1,16 @@
 ﻿@page
-@{
-    var channel = ViewBag.Channel as Channel;
-    var messages = ViewBag.Messages as List<Message>;
-    var userNames = ViewBag.UserNames as Dictionary<Message, User>;
-}
+@{}
 @model Message
-
-<h2>@channel.Title</h2>
-
-@foreach (var message in messages)
-{
-    <div class="message_container">
-        <div class="message_author">@userNames[message].Name @@ @message.SendDate.ToShortTimeString()</div>
-        <div class="message_contents">@message.EncryptedContents</div>
+<div class="body">
+    <div id="container" class="message_container">
     </div>
-}
+
+    <div id="input_holder">
+        <input type="text" , id="messageInput" />
+        <input type="button" id="sendButton" value="Connecting..." disabled="true" />
+    </div>
+
+
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+</div>

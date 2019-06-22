@@ -42,18 +42,8 @@ namespace ActiveBear.Controllers
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
 
-            if (!ChannelAuthService.UserIsAuthed(channel, currentUser, _context))
+            if (!ChannelAuthService.UserIsAuthed(channel, currentUser))
                 return Redirect(Constants.Routes.Home);
-
-            // Gather relevant messages
-            var channelMessages = ChannelService.MessagesFor(channel, _context);
-            foreach (var message in channelMessages)
-                message.EncryptedContents = EncryptionService.AesDecrypt(message.EncryptedContents, channel.KeyHash);
-
-            // Push our information to the view
-            ViewBag.Channel = channel;
-            ViewBag.Messages = channelMessages;
-            ViewBag.UserNames = MessageService.LinkMessagesToUsers(channelMessages, _context);
 
             return View();
         }

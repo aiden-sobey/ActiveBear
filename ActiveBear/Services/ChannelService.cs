@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace ActiveBear.Services
 {
@@ -39,5 +41,31 @@ namespace ActiveBear.Services
         {
             return context.Messages.Where(m => m.Channel == channel.Id).ToList();
         }
+
+        public static List<Message> MessagesFor(string channelPacket)
+        {
+            var messages = new List<Message>();
+            var context = DbService.NewDbContext();
+            var decodedPacket = JsonConvert.DeserializeObject<ChannelPacket>(channelPacket);
+
+            var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedPacket.Channel);
+            var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedPacket.UserCookie);
+            var auth = ChannelAuthService.UserIsAuthed(channel, user);
+
+            if (auth)
+                messages = context.Messages.Where(m => m.Channel == channel.Id).ToList();
+
+            return messages;
+        }
+    }
+
+    [DataContract]
+    class ChannelPacket
+    {
+        [DataMember]
+        public string UserCookie = string.Empty;
+
+        [DataMember]
+        public string Channel = string.Empty;
     }
 }
