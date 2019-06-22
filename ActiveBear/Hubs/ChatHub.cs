@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using ActiveBear.Services;
 
@@ -9,10 +7,9 @@ namespace ActiveBear.Hubs
     public class ChatHub : Hub
     {
         // Client has sent us a message
-        // TODO: it needs to be encrypted before this point
         public async Task SendMessage(string messagePacket)
         {
-			if (string.IsNullOrEmpty(messagePacket)) return;
+            if (string.IsNullOrEmpty(messagePacket)) return;
 
             // Create a message from the serialized packet
             var message = MessageService.NewMessageFromPacket(messagePacket);
@@ -26,15 +23,13 @@ namespace ActiveBear.Hubs
         // Client has requested all messages for this channel
         public async Task GetChannelMessages(string channelPacket)
         {
-			var channelMessages = ChannelService.MessagesFor(channelPacket);
+            var channelMessages = ChannelService.MessagesFor(channelPacket);
 
-            // Quick hack
+            // TODO: batch this and just send one message packet
             foreach (var message in channelMessages)
-			{
-				await Clients.Caller.SendAsync("ReceiveMessage", message.EncryptedContents);
-			}
-
-			//await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", message.EncryptedContents);
+            }
         }
     }
 }

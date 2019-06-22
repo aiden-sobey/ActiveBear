@@ -29,7 +29,11 @@ var messageContainer = document.getElementById("container");
 // Send
 sendButton.addEventListener("click", function (event) {
 	PostMessage();
-    event.preventDefault();
+	event.preventDefault();
+});
+messageInput.addEventListener("keydown", function(event) {
+	if (event.key === "Enter")
+		PostMessage();
 });
 
 // Receive
@@ -53,12 +57,11 @@ connection.start().then(function(){
 	sendButton.value = "Send";
 
 	// Get all existing messages
-    connection.invoke(GetChannelMessages, GenerateChannelPacket()).catch(function (err) {
-        return console.error(err.toString());
-    });
-
+	connection.invoke(GetChannelMessages, GenerateChannelPacket()).catch(function (err) {
+		return console.error(err.toString());
+	});
 }).catch(function (err) {
-    return console.error(err.toString());
+	return console.error(err.toString());
 });
 
 
@@ -66,26 +69,27 @@ connection.start().then(function(){
 
 
 function updateScroll(){
-    messageContainer.scrollTop = messageContainer.scrollHeight;
+	messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
 function PostMessage() {
 	var message = messageInput.value;
 	if (message === null || message === "") return;
 
-    var messagePacket = GenerateMessagePacket(message);
-    connection.invoke(SendMessage, messagePacket).catch(function (err) {
-        return console.error(err.toString());
-    });
+	var messagePacket = GenerateMessagePacket(message);
+	connection.invoke(SendMessage, messagePacket).catch(function (err) {
+		return console.error(err.toString());
+	});
+	messageInput.value = "";
 }
 
 function CreateMessageBubble(message) {
 	if (message === null || message === "") return;
 
-    var messageBubble = document.createElement("div");
+	var messageBubble = document.createElement("div");
 	messageBubble.setAttribute('class', 'message_contents');
-    messageBubble.textContent = message;
-    messageContainer.appendChild(messageBubble);
+	messageBubble.textContent = message;
+	messageContainer.appendChild(messageBubble);
 }
 
 function GenerateMessagePacket(message) {
