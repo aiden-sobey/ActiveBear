@@ -12,8 +12,23 @@
     vertical-align: middle;
 }
 
-#input_holder {
+#messaging_footer {
     padding-top: 15px;
+    width: 100%;
+}
+
+.password_holder {
+    float: right;
+    width: 200px;
+}
+
+.message_holder {
+    float: left;
+    width: 650px;
+}
+
+#messageInput {
+    width: 500px;
 }
 
 .message_contents {
