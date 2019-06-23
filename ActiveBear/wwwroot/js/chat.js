@@ -20,6 +20,7 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 // File elements
 var sendButton = document.getElementById("sendButton");
 var messageInput = document.getElementById("messageInput");
+var passwordInput = document.getElementById("passwordInput");
 var messageContainer = document.getElementById("container");
 
 
@@ -34,6 +35,12 @@ sendButton.addEventListener("click", function (event) {
 messageInput.addEventListener("keydown", function(event) {
 	if (event.key === "Enter")
 		PostMessage();
+});
+passwordInput.addEventListener("keydown", function(event) {
+	if (event.key === "Enter") {
+		RemoveAllMessages();
+		RequestAllMessages();
+	}
 });
 
 // Receive
@@ -55,11 +62,8 @@ connection.on(ReceiveAllMessages, function (message) {
 connection.start().then(function(){
 	sendButton.disabled = false;
 	sendButton.value = "Send";
+	RequestAllMessages();
 
-	// Get all existing messages
-	connection.invoke(GetChannelMessages, GenerateChannelPacket()).catch(function (err) {
-		return console.error(err.toString());
-	});
 }).catch(function (err) {
 	return console.error(err.toString());
 });
@@ -68,7 +72,13 @@ connection.start().then(function(){
 /*		Helper methods		*/
 
 
-function updateScroll(){
+function RequestAllMessages() {
+	connection.invoke(GetChannelMessages, GenerateChannelPacket()).catch(function (err) {
+		return console.error(err.toString());
+	});
+}
+
+function updateScroll() {
 	messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
@@ -111,10 +121,7 @@ function GenerateChannelPacket() {
 }
 
 function AesEncrypt(text) {
-	// 128-bit key
-	var key = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
-
-	// The initialization vector (must be 16 bytes)
+	var key = HashedChannelPassword();
 	var iv = [ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 ];
 
 	// Convert text to bytes
@@ -127,17 +134,11 @@ function AesEncrypt(text) {
 }
 
 function AesDecrypt(encryptedHex) {
-		// 128-bit key
-		var key = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
-
-		// The initialization vector (must be 16 bytes)
-		var iv = [ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 ];
+	var key = HashedChannelPassword();
+	var iv = [ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 ];
 		
-		var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
-
-		// The output feedback mode of operation maintains internal state,
-		// so to decrypt a new instance must be instantiated.
-		var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
+	var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
+	var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
 
 	try {
 		var decryptedBytes = aesOfb.decrypt(encryptedBytes);
@@ -145,5 +146,17 @@ function AesDecrypt(encryptedHex) {
 	}
 	catch (err) {
 		return encryptedHex;
+	}
+}
+
+function HashedChannelPassword() {
+	// Get the password entered by the user and hash it to 256 bits
+	var hashedPassword = sha256(passwordInput.value);
+	return aesjs.utils.hex.toBytes(hashedPassword);
+}
+
+function RemoveAllMessages() {
+	while (messageContainer.firstChild) {
+		messageContainer.removeChild(messageContainer.firstChild);
 	}
 }
