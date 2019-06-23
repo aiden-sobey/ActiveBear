@@ -18,7 +18,7 @@ var currentChannel = window.location.href.split("/Channel/Engage/")[1].substring
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 // File elements
-var sendButton = document.getElementById("sendButton");
+var channelKey = "";
 var messageInput = document.getElementById("messageInput");
 var passwordInput = document.getElementById("passwordInput");
 var messageContainer = document.getElementById("container");
@@ -28,10 +28,6 @@ var messageContainer = document.getElementById("container");
 
 
 // Send
-sendButton.addEventListener("click", function (event) {
-	PostMessage();
-	event.preventDefault();
-});
 messageInput.addEventListener("keydown", function(event) {
 	if (event.key === "Enter")
 		PostMessage();
@@ -60,13 +56,19 @@ connection.on(ReceiveAllMessages, function (message) {
 
 
 connection.start().then(function(){
-	sendButton.disabled = false;
-	sendButton.value = "Send";
-	RequestAllMessages();
+	AuthenticateChannel();
+	//RequestAllMessages();
 
 }).catch(function (err) {
 	return console.error(err.toString());
 });
+
+function AuthenticateChannel() {
+	channelKey = prompt("Please enter a channel key:", "password123");
+	passwordInput.value = channelKey; // TODO: store this somewhere more secure than HTML DOM
+	messageInput.hidden = false;
+	RequestAllMessages();
+}
 
 
 /*		Helper methods		*/
@@ -83,9 +85,11 @@ function updateScroll() {
 }
 
 function PostMessage() {
-	var message = AesEncrypt(messageInput.value);
 	if (message === null || message === "") return;
+	if (passwordInput.value === "" || passwordInput.value === null)
+		return PasswordEmptyError();
 
+	var message = AesEncrypt(messageInput.value);
 	var messagePacket = GenerateMessagePacket(message);
 	connection.invoke(SendMessage, messagePacket).catch(function (err) {
 		return console.error(err.toString());
@@ -93,12 +97,19 @@ function PostMessage() {
 	messageInput.value = "";
 }
 
+function PasswordEmptyError() {
+	alert("Key can't be empty! Otherwise your message won't be encrypted.");
+	messageInput.value = "";
+}
+
 function CreateMessageBubble(message) {
 	if (message === null || message === "") return;
+	var decryptedText = AesDecrypt(message);
+	if (decryptedText === null) return;
 
 	var messageBubble = document.createElement("div");
 	messageBubble.setAttribute('class', 'message_contents');
-	messageBubble.textContent = AesDecrypt(message);
+	messageBubble.textContent = decryptedText;
 	messageContainer.appendChild(messageBubble);
 }
 
@@ -145,7 +156,8 @@ function AesDecrypt(encryptedHex) {
 		return aesjs.utils.utf8.fromBytes(decryptedBytes);
 	}
 	catch (err) {
-		return encryptedHex;
+		//return encryptedHex;
+		return null;
 	}
 }
 
