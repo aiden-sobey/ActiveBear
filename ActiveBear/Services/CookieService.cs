@@ -1,10 +1,7 @@
 ﻿using System;
 using ActiveBear.Models;
-using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using ActiveBear.Services;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 
 namespace ActiveBear.Services
 {
@@ -20,7 +17,7 @@ namespace ActiveBear.Services
             response.Cookies.Append(Constants.User.CookieKey, user.CookieId.ToString(), cookieOption);
         }
 
-        public static User CurrentUser(ActiveBearContext context, HttpRequest request)
+        public static User CurrentUser(HttpRequest request)
         {
             User currentUser = null;
 
@@ -29,11 +26,11 @@ namespace ActiveBear.Services
                 try
                 {
                     var requestCookie = Guid.Parse(request.Cookies[Constants.User.CookieKey]);
-                    currentUser = context.Users.Where(u => u.CookieId == requestCookie).FirstOrDefault();
+                    currentUser = DbService.NewDbContext().Users.Where(u => u.CookieId == requestCookie).FirstOrDefault();
                 }
                 catch
                 {
-                    // Invalid cookie passed in
+                    // Invalid cookie in the browser
                 }
             }
 

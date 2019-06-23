@@ -30,7 +30,7 @@ namespace ActiveBear.Controllers
 
         public IActionResult ViewAll()
         {
-            var currentUser = CookieService.CurrentUser(_context, Request);
+            var currentUser = CookieService.CurrentUser(Request);
 
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);

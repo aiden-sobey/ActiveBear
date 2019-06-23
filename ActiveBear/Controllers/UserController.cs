@@ -18,7 +18,7 @@ namespace ActiveBear.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            if (CookieService.CurrentUser(_context, Request) != null)
+            if (CookieService.CurrentUser(Request) != null)
                 return Redirect(Constants.Routes.Home);
 
             return View();
@@ -61,7 +61,7 @@ namespace ActiveBear.Controllers
             if (_context.Users.Where(u => u.Name == userRequest.Name).Any())
                 return View();
 
-            var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description, _context);
+            var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description);
             if (newUser != null)
                 return Redirect(Constants.Routes.Login);
             else

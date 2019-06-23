@@ -6,8 +6,10 @@ namespace ActiveBear.Services
 {
     public static class UserService
     {
-        public static User CreateUser(string name, string password, string description, ActiveBearContext context)
+        public static User CreateUser(string name, string password, string description)
         {
+            var context = DbService.NewDbContext();
+
             if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(password))
                 return null;
 

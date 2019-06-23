@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Text;
 
-namespace ActiveBear.SerBvices
+namespace ActiveBear.Services
 {
     // Code is taken from https://stackoverflow.com/questions/273452/using-aes-encryption-in-c-sharp
     /*

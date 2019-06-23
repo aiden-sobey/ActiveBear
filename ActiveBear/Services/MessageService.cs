@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
+using ActiveBear.Hubs;
 using ActiveBear.Models;
 using Newtonsoft.Json;
 
@@ -41,10 +41,10 @@ namespace ActiveBear.Services
             return NewMessage(user.Name, channel.Id, decodedMessage.Message);
         }
 
-        public static List<Message> ChannelMessages(Channel channel, ActiveBearContext context)
+        public static List<Message> ChannelMessages(Channel channel)
         {
+            var context = DbService.NewDbContext();
             var messages = context.Messages.Where(m => m.Channel == channel.Id).ToList();
-            var key = channel.KeyHash;
 
             return messages;
         }
@@ -62,18 +62,5 @@ namespace ActiveBear.Services
 
             return link;
         }
-    }
-
-    [DataContract]
-    class MessagePacket
-    {
-        [DataMember]
-        public string UserCookie = string.Empty;
-
-        [DataMember]
-        public string Channel = string.Empty;
-
-        [DataMember]
-        public string Message = string.Empty;
     }
 }

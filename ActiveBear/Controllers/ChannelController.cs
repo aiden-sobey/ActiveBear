@@ -22,12 +22,6 @@ namespace ActiveBear.Controllers
             return View();
         }
 
-        public void CreateChannel(string title, string key)
-        {
-            var currentUser = CookieService.CurrentUser(_context, Request);
-            var channel = ChannelService.CreateChannel(title, key, _context, currentUser);
-        }
-
         public IActionResult Engage(Guid? id)
         {
             if (id == null)
@@ -38,7 +32,7 @@ namespace ActiveBear.Controllers
                 return NotFound();
 
             // Check the current user is authorised
-            var currentUser = CookieService.CurrentUser(_context, Request);
+            var currentUser = CookieService.CurrentUser(Request);
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
 

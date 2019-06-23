@@ -2,17 +2,14 @@
 using ActiveBear.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using ActiveBear.Hubs;
 
 namespace ActiveBear.Services
 {
     public static class ChannelService
     {
-        public static Channel CreateChannel(string title, string rawKey, ActiveBearContext context, User createUser)
+        public static Channel CreateChannel(string title, string rawKey, User createUser)
         {
             var errors = new List<String>();
 
@@ -22,6 +19,7 @@ namespace ActiveBear.Services
             if (String.IsNullOrEmpty(rawKey))
                 errors.Add("rawKey was empty!!!");
 
+            var context = DbService.NewDbContext();
             var channel = new Channel(context)
             {
                 Title = title,
@@ -37,8 +35,9 @@ namespace ActiveBear.Services
             return channel;
         }
 
-        public static List<Message> MessagesFor(Channel channel, ActiveBearContext context)
+        public static List<Message> MessagesFor(Channel channel)
         {
+            var context = DbService.NewDbContext();
             return context.Messages.Where(m => m.Channel == channel.Id).ToList();
         }
 
@@ -57,15 +56,5 @@ namespace ActiveBear.Services
 
             return messages;
         }
-    }
-
-    [DataContract]
-    class ChannelPacket
-    {
-        [DataMember]
-        public string UserCookie = string.Empty;
-
-        [DataMember]
-        public string Channel = string.Empty;
     }
 }

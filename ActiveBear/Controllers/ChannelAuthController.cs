@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +22,7 @@ namespace ActiveBear.Controllers
                 return NotFound();
 
             var channel = _context.Channels.Where(c => c.Id == id).FirstOrDefault();
-            var currentUser = CookieService.CurrentUser(_context, Request);
+            var currentUser = CookieService.CurrentUser(Request);
             if (channel == null || currentUser == null)
                 return NotFound();
 
@@ -45,7 +43,7 @@ namespace ActiveBear.Controllers
                 return NotFound();
 
             var channel = _context.Channels.Where(c => c.Id == id).FirstOrDefault();
-            var currentUser = CookieService.CurrentUser(_context, Request);
+            var currentUser = CookieService.CurrentUser(Request);
             if (channel == null || currentUser == null)
                 return NotFound();
 
