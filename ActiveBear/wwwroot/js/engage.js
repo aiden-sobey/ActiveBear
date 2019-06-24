@@ -31,7 +31,8 @@ connection.on(ReceiveAllMessages, function (message) {
 
 
 connection.start().then(function(){
-	AuthenticateChannel();
+	Messager.AuthenticateChannel();
+	ChatHub.RequestAllMessages();
 
 }).catch(function (err) {
 	return console.error(err.toString());
