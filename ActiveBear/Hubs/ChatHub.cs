@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using ActiveBear.Services;
+using ActiveBear.Models;
+using Newtonsoft.Json;
 
 namespace ActiveBear.Hubs
 {
@@ -21,15 +23,25 @@ namespace ActiveBear.Hubs
         }
 
         // Client has requested all messages for this channel
-        public async Task GetChannelMessages(string channelPacket)
+        public async Task GetChannelMessages(string channelInfoPacket)
         {
-            var channelMessages = ChannelService.MessagesFor(channelPacket);
+            var channelMessages = ChannelService.MessagesFor(channelInfoPacket);
 
             // TODO: batch this and just send one message packet
             foreach (var message in channelMessages)
             {
                 await Clients.Caller.SendAsync("ReceiveMessage", message.EncryptedContents);
             }
+        }
+
+        public async Task CreateChannel(string channelCreationPacket)
+        {
+            Channel channel = ChannelService.CreateChannel(channelCreationPacket);
+
+            if (channel == null)
+                await Clients.Caller.SendAsync("BuildErrors", "Channel creation failed"); // TODO: implement this
+            else
+                await Clients.Caller.SendAsync("ChannelCreated", channel.Id); //TODO: implement this
         }
     }
 }

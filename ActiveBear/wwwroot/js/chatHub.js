@@ -58,4 +58,14 @@ class ChatHub {
 
 		return JSON.stringify(packet);
 	}
+
+	static GenerateChannelCreationPacket(title, key) {
+		var packet = {
+			UserCookie: this.CurrentUser(),
+			ChannelTitle: title,
+			ChannelKey: key
+		}
+
+		return JSON.stringify(packet);
+	}
 }
