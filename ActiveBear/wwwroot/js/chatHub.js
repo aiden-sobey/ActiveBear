@@ -1,10 +1,10 @@
-"use strict";
+﻿"use strict";
 
 var SendMessage = "SendMessage";
 var GetChannelMessages = "GetChannelMessages";
 
 class ChatHub {
-	static PostMessage() {
+	static PostMessage(message) {
 		if (message === null || message === "") return;
 		if (passwordInput.value === "" || passwordInput.value === null)
 			return PasswordEmptyError();
