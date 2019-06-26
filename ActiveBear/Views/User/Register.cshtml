@@ -1,33 +1,26 @@
 ﻿@model User
-@{
-}
-<div class="registrationPage">
-    <h2>Register to ActiveBear</h2>
-    <h3>Encrypted Messaging</h3>
+@{}
+<div id="input_area">
+    <h2>Register</h2><br />
 
     <form method="post" asp-controller="User" asp-action="Register">
-
-        <div class="nameInput">
-            <label asp-for="Name"></label>
-            <input asp-for="Name" />
+        <div>
+            <input asp-for="Name" placeholder="User Name" />
             <span asp-validation-for="Name"></span>
         </div>
 
-        <div class="descriptionInput">
-            <label asp-for="Description"></label>
-            <input asp-for="Description" />
+        <div>
+            <input asp-for="Description" placeholder="Description" />
             <span asp-validation-for="Description"></span>
         </div>
 
-        <div class="passwordInput">
-            <label asp-for="Password"></label>
-            <input asp-for="Password" />
+        <div>
+            <input asp-for="Password" placeholder="Password"/>
             <span asp-validation-for="Password"></span>
         </div>
 
         <div>
             <input type="submit" value="Register" />
         </div>
-
     </form>
 </div>

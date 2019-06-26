@@ -3,20 +3,18 @@
     var channel = ViewBag.Channel as Channel;
 }
 
-<div class="registrationPage">
-    <h2>Authorising access to @channel.Title</h2>
-    <h5>Please enter your shared channel password.</h5>
+<div id="input_area">
+    <h3>Unlock access to: </h3>
+    <h3><b>@channel.Title</b></h3><br />
 
     <form method="post" asp-controller="ChannelAuth" asp-action="AuthUserToChannel">
-
-        <div class="nameInput">
-            <input asp-for="HashedKey" />
+        <div>
+            <input asp-for="HashedKey" placeholder="Channel Key" />
             <span asp-validation-for="HashedKey"></span>
         </div>
 
         <div>
             <input type="submit" value="Decrypt" />
         </div>
-
     </form>
 </div>

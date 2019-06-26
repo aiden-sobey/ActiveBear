@@ -4,6 +4,11 @@
     height: 700px;
 }
 
+input {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
 .message_author {
     float: left;
     text-align: center;
@@ -29,6 +34,18 @@
 
 #messageInput {
     width: 500px;
+}
+
+#input_area {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -200px;
+
+    text-align: center;
 }
 
 .message_contents {
