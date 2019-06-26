@@ -9,7 +9,7 @@
 
     <form method="post" asp-controller="ChannelAuth" asp-action="AuthUserToChannel">
         <div>
-            <input asp-for="HashedKey" placeholder="Channel Key" />
+            <input asp-for="HashedKey" placeholder="Channel Key" type="password" />
             <span asp-validation-for="HashedKey"></span>
         </div>
 

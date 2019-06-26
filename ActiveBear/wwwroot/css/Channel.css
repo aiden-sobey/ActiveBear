@@ -9,6 +9,16 @@ input {
     margin-bottom: 10px;
 }
 
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    margin-bottom: 25px;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+}
+
 .message_author {
     float: left;
     text-align: center;
@@ -34,6 +44,7 @@ input {
 
 #messageInput {
     width: 500px;
+    text-align: left;
 }
 
 #input_area {
