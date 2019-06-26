@@ -40,13 +40,6 @@ namespace ActiveBear.Services
                 return null;
             }
 
-            if (packet.ChannelKey == null   || packet.ChannelKey == string.Empty ||
-                packet.UserCookie == null   || packet.UserCookie == string.Empty ||
-                packet.ChannelTitle == null || packet.ChannelTitle == string.Empty)
-            {
-                return null;
-            }
-
             var user = CookieService.CurrentUser(packet.UserCookie);
             return CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
         }
@@ -64,9 +57,8 @@ namespace ActiveBear.Services
 
             var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedPacket.Channel);
             var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedPacket.UserCookie);
-            var auth = ChannelAuthService.UserIsAuthed(channel, user);
 
-            if (auth)
+            if (ChannelAuthService.UserIsAuthed(channel, user))
                 return context.Messages.Where(m => m.Channel == channel.Id).ToList();
 
             return new List<Message>();

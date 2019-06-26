@@ -22,13 +22,14 @@ connection.on(ReceiveMessage, function (message) {
 	Messager.CreateMessageBubble(message);
 });
 
-connection.on(ReceiveAllMessages, function (message) {
-	Messager.CreateMessageBubble("JavaScript not implemented yet.");
+connection.on(ReceiveAllMessages, function (messageList) {
+	var messages = JSON.parse(messageList);
+	messages.forEach(function(message) {
+		Messager.CreateMessageBubble(message.EncryptedContents);
+	});
 });
 
-
-/*		Connection		*/
-
+// Connection
 
 connection.start().then(function(){
 	Messager.AuthenticateChannel();
@@ -37,12 +38,3 @@ connection.start().then(function(){
 }).catch(function (err) {
 	return console.error(err.toString());
 });
-
-
-/*		Helper methods		*/
-
-
-function PasswordEmptyError() {
-	alert("Key can't be empty! Otherwise your message won't be encrypted.");
-	messageInput.value = "";
-}

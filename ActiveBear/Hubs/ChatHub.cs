@@ -25,15 +25,13 @@ namespace ActiveBear.Hubs
         // Client has requested all messages for this channel
         public async Task GetChannelMessages(string channelInfoPacket)
         {
-            var channelMessages = ChannelService.MessagesFor(channelInfoPacket);
+            var channelMessages = JsonConvert.SerializeObject(ChannelService.MessagesFor(channelInfoPacket));
 
-            // TODO: batch this and just send one message packet
-            foreach (var message in channelMessages)
-            {
-                await Clients.Caller.SendAsync("ReceiveMessage", message.EncryptedContents);
-            }
+            await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
+
         }
 
+        // Attempt to create a new channel from the given data
         public async Task CreateChannel(string channelCreationPacket)
         {
             Channel channel = ChannelService.CreateChannel(channelCreationPacket);

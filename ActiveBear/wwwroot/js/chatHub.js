@@ -7,7 +7,7 @@ class ChatHub {
 	static PostMessage(message) {
 		if (message === null || message === "") return;
 		if (passwordInput.value === "" || passwordInput.value === null)
-			return PasswordEmptyError();
+			return; // TODO: throw password empty error here
 
 		var message = Encryption.AesEncrypt(messageInput.value);
 		var messagePacket = this.GenerateMessagePacket(message);
