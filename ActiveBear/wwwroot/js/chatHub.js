@@ -9,7 +9,7 @@ class ChatHub {
 		if (passwordInput.value === "" || passwordInput.value === null)
 			return PasswordEmptyError();
 
-		var message = AesEncrypt(messageInput.value);
+		var message = Encryption.AesEncrypt(messageInput.value);
 		var messagePacket = this.GenerateMessagePacket(message);
 		connection.invoke(SendMessage, messagePacket).catch(function (err) {
 			return console.error(err.toString());

@@ -1,11 +1,10 @@
 ﻿"use strict";
 
-var BuildErrors = "BuildErrors";
 var ChannelCreated= "ChannelCreated";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-var nameInput = document.getElementById("channel_name_input");
+var titleInput = document.getElementById("channel_name_submit");
 var keyInput = document.getElementById("channel_key_submit");
 var createButton = document.getElementById("channel_create_button");
 
@@ -22,12 +21,14 @@ createButton.addEventListener("mousedown", function(event) {
 
 // Receive actions
 
-connection.on(BuildErrors, function (message) {
-	// TODO
-});
-
 connection.on(ChannelCreated, function (message) {
-	// TODO
+	if (message === null || message === "") {
+		// TODO: we've got an error to handle here
+	}
+	else {	// We were passed a valid GUID
+		var path = "/ChannelAuth/AuthUserToChannel/" + message; // TODO: constantize
+		window.location.replace(path);
+	}
 });
 
 
@@ -44,5 +45,10 @@ connection.start().then(function(){
 /*      Helper methods      */
 
 function CreateChannel() {
-	// TODO
+	var title = titleInput.value;
+	var key = sha256(keyInput.value);
+	var packet = ChatHub.GenerateChannelCreationPacket(title, key);
+	connection.invoke("CreateChannel", packet).catch(function(err) {
+		return console.error(err.toString());
+	});;
 }

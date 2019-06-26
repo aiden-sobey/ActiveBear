@@ -38,10 +38,8 @@ namespace ActiveBear.Hubs
         {
             Channel channel = ChannelService.CreateChannel(channelCreationPacket);
 
-            if (channel == null)
-                await Clients.Caller.SendAsync("BuildErrors", "Channel creation failed"); // TODO: implement this
-            else
-                await Clients.Caller.SendAsync("ChannelCreated", channel.Id); //TODO: implement this
+            if (channel != null)
+                await Clients.Caller.SendAsync("ChannelCreated", channel.Id);
         }
     }
 }

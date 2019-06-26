@@ -10,5 +10,6 @@ namespace ActiveBear.Constants
         internal const string Home = "/Message/ViewAll";
         internal const string AuthUserToChannel = "/ChannelAuth/AuthUserToChannel";
         internal const string EngageChannel = "/Channel/Engage";
+        internal const string CreateChannel = "/Channel/Create";
     }
 }

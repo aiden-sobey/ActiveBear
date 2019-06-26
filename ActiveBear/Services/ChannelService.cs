@@ -30,7 +30,15 @@ namespace ActiveBear.Services
 
         public static Channel CreateChannel(string channelCreationPacket)
         {
-            var packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
+            ChannelCreationPacket packet;
+            try
+            {
+                packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
+            }
+            catch // Deserialization error
+            {
+                return null;
+            }
 
             if (packet.ChannelKey == null   || packet.ChannelKey == string.Empty ||
                 packet.UserCookie == null   || packet.UserCookie == string.Empty ||

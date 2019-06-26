@@ -11,7 +11,7 @@ using System.Text;
 namespace ActiveBear.Services
 {
     // Code is taken from https://stackoverflow.com/questions/273452/using-aes-encryption-in-c-sharp
-    /*
+   
     public static class EncryptionService
     {
         private static int _iterations = 2;
@@ -20,6 +20,23 @@ namespace ActiveBear.Services
         private static string _hash = "SHA1";
         private static string _salt = "aselrias38490a32"; // Random
         private static string _vector = "8947az34awl34kjq"; // Random
+
+        public static string Sha256(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                StringBuilder builder = new StringBuilder();
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+
+                return builder.ToString();
+            }
+        }
 
         public static string AesEncrypt(string value, string password)
         {
@@ -97,9 +114,9 @@ namespace ActiveBear.Services
                         }
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    return String.Empty;
+                    return string.Empty;
                 }
 
                 cipher.Clear();
@@ -107,5 +124,5 @@ namespace ActiveBear.Services
             return Encoding.UTF8.GetString(decrypted, 0, decryptedByteCount);
         }
     }
-    */
+    
 }
