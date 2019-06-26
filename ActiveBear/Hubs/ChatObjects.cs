@@ -20,15 +20,29 @@ namespace ActiveBear.Hubs
         public string Message = string.Empty;
     }
 
-    // ChannelPacket is sent from the JS when all messages for a channel are requested.
+    // ChannelInfoPacket is sent from the JS when all messages for a channel are requested.
     // Server uses this to find all messages for a channel and check the user has auth.
     [DataContract]
-    class ChannelPacket
+    class ChannelInfoPacket
     {
         [DataMember]
         public string UserCookie = string.Empty;
 
         [DataMember]
         public string Channel = string.Empty;
+    }
+
+    // ChannelCreationPacket holds the info necessary to create a channel. Note that fields can be empty.
+    [DataContract]
+    class ChannelCreationPacket
+    {
+        [DataMember]
+        public string UserCookie = string.Empty;
+
+        [DataMember]
+        public string ChannelTitle = string.Empty;
+
+        [DataMember]
+        public string ChannelKey = string.Empty;
     }
 }

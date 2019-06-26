@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -37,8 +36,13 @@ namespace ActiveBear.Controllers
                 return Redirect(Constants.Routes.Login);
 
             if (!ChannelAuthService.UserIsAuthed(channel, currentUser))
-                return Redirect(Constants.Routes.Home);
+                return Redirect(Constants.Routes.AuthUserToChannel + id.ToString());
 
+            return View();
+        }
+
+        public IActionResult Create()
+        {
             return View();
         }
     }

@@ -9,7 +9,7 @@ class ChatHub {
 		if (passwordInput.value === "" || passwordInput.value === null)
 			return PasswordEmptyError();
 
-		var message = AesEncrypt(messageInput.value);
+		var message = Encryption.AesEncrypt(messageInput.value);
 		var messagePacket = this.GenerateMessagePacket(message);
 		connection.invoke(SendMessage, messagePacket).catch(function (err) {
 			return console.error(err.toString());
@@ -54,6 +54,16 @@ class ChatHub {
 		var packet = {
 			UserCookie: this.CurrentUser(),
 			Channel: this.CurrentChannel()
+		}
+
+		return JSON.stringify(packet);
+	}
+
+	static GenerateChannelCreationPacket(title, key) {
+		var packet = {
+			UserCookie: this.CurrentUser(),
+			ChannelTitle: title,
+			ChannelKey: key
 		}
 
 		return JSON.stringify(packet);

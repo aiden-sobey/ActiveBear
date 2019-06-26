@@ -2,31 +2,24 @@
 @{
     ViewData["Title"] = "Secure Chat";
 }
-<div id="pageContainer">
-    <div class="registrationPage">
-        <h2>ActiveBear Encrypted Messaging</h2>
-        <h3>Log In</h3>
 
-        <form method="post" asp-controller="User" asp-action="Login">
+<div id="input_area">
+    <h3>Log In</h3><br />
 
-            <div class="nameInput">
-                <input asp-for="Name" placeholder="User Name" />
-                <br />
-                <span asp-validation-for="Name"></span>
-            </div>
+    <form method="post" asp-controller="User" asp-action="Login">
+        <div>
+            <input asp-for="Name" placeholder="User Name" /><br />
+            <span asp-validation-for="Name"></span>
+        </div>
 
-            <div class="passwordInput">
-                <input asp-for="Password" placeholder="Password" />
-                <br />
-                <span asp-validation-for="Password"></span>
-            </div>
+        <div>
+            <input asp-for="Password" placeholder="Password" /><br />
+            <span asp-validation-for="Password"></span>
+        </div>
 
-            <div>
-                <input type="submit" value="Login" />
-                <a href="/User/Register">Register</a>
-
-            </div>
-
-        </form>
-    </div>
+        <div>
+            <input type="submit" value="Login" />
+            <a href="/User/Register">Register</a>
+        </div>
+    </form>
 </div>

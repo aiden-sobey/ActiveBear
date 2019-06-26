@@ -9,30 +9,46 @@ namespace ActiveBear.Services
 {
     public static class ChannelService
     {
-        public static Channel CreateChannel(string title, string rawKey, User createUser)
+        public static Channel CreateChannel(string title, string key, User createUser)
         {
-            var errors = new List<String>();
-
-            if (String.IsNullOrEmpty(title))
-                errors.Add("Title was empty!!!");
-
-            if (String.IsNullOrEmpty(rawKey))
-                errors.Add("rawKey was empty!!!");
+            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(key) || createUser == null)
+                return null;
 
             var context = DbService.NewDbContext();
             var channel = new Channel(context)
             {
                 Title = title,
-                KeyHash = rawKey, //TODO some encrytion here
+                KeyHash = key,
                 CreateUser = createUser.Name
             };
-
-            rawKey = String.Empty;
 
             context.Add(channel);
             context.SaveChanges();
 
             return channel;
+        }
+
+        public static Channel CreateChannel(string channelCreationPacket)
+        {
+            ChannelCreationPacket packet;
+            try
+            {
+                packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
+            }
+            catch // Deserialization error
+            {
+                return null;
+            }
+
+            if (packet.ChannelKey == null   || packet.ChannelKey == string.Empty ||
+                packet.UserCookie == null   || packet.UserCookie == string.Empty ||
+                packet.ChannelTitle == null || packet.ChannelTitle == string.Empty)
+            {
+                return null;
+            }
+
+            var user = CookieService.CurrentUser(packet.UserCookie);
+            return CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
         }
 
         public static List<Message> MessagesFor(Channel channel)
@@ -41,20 +57,19 @@ namespace ActiveBear.Services
             return context.Messages.Where(m => m.Channel == channel.Id).ToList();
         }
 
-        public static List<Message> MessagesFor(string channelPacket)
+        public static List<Message> MessagesFor(string channelInfoPacket)
         {
-            var messages = new List<Message>();
             var context = DbService.NewDbContext();
-            var decodedPacket = JsonConvert.DeserializeObject<ChannelPacket>(channelPacket);
+            var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
 
             var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedPacket.Channel);
             var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedPacket.UserCookie);
             var auth = ChannelAuthService.UserIsAuthed(channel, user);
 
             if (auth)
-                messages = context.Messages.Where(m => m.Channel == channel.Id).ToList();
+                return context.Messages.Where(m => m.Channel == channel.Id).ToList();
 
-            return messages;
+            return new List<Message>();
         }
     }
 }

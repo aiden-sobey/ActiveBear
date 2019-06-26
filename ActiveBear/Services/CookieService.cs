@@ -37,6 +37,21 @@ namespace ActiveBear.Services
             return currentUser;
         }
 
+        public static User CurrentUser(string userCookie)
+        {
+            var context = DbService.NewDbContext();
+            var userGuid = Guid.Empty;
+            try
+            {
+                userGuid = Guid.Parse(userCookie);
+                return context.Users.FirstOrDefault(u => u.CookieId == userGuid);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public static void DeleteUserCookie(HttpResponse response)
         {
             response.Cookies.Delete(Constants.User.CookieKey);

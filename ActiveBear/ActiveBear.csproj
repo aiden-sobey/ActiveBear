@@ -23,4 +23,9 @@
     <Folder Include="Views\ChannelAuth\" />
     <Folder Include="Hubs\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\js\chatHub.js" />
+    <Content Remove="wwwroot\js\engage.js" />
+    <Content Remove="wwwroot\js\messager.js" />
+  </ItemGroup>
 </Project>

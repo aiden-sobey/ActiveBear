@@ -32,24 +32,5 @@ namespace ActiveBear.Services
 
             return auth != null;
         }
-
-        private static List<User> UsersAuthedFor(Channel channel)
-        {
-            var context = DbService.NewDbContext();
-
-            // Get relevant auths
-            var channelAuths = context.ChannelAuths.Where(a => a.Channel == channel.Id).ToList();
-            var authedCookies = channelAuths.Select(c => c.User).ToList();
-            var authedUsers = new List<User>();
-
-            foreach(var cookie in authedCookies)
-            {
-                var user = context.Users.Where(u => u.CookieId == cookie).FirstOrDefault();
-                if (user != null)
-                    authedUsers.Add(user);
-            }
-
-            return authedUsers;
-        }
     }
 }
