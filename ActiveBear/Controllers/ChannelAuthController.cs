@@ -54,8 +54,7 @@ namespace ActiveBear.Controllers
                 return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id);
             }
 
-            // Auth failed
-            // TODO return this as error message
+            ViewBag.Error = "Incorrect password";
             ViewBag.Channel = channel;
             return View();
         }

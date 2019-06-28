@@ -1,7 +1,15 @@
 ﻿@model User
 @{
     ViewData["Title"] = "Secure Chat";
+    var error = ViewBag.Error as string;
 }
+
+<div id="error_area">
+    @if (error != null)
+    {
+        <div id="error">@error</div>
+    }
+</div>
 
 <div id="input_area">
     <h3>Log In</h3><br />
@@ -9,12 +17,10 @@
     <form method="post" asp-controller="User" asp-action="Login">
         <div>
             <input asp-for="Name" placeholder="User Name" /><br />
-            <span asp-validation-for="Name"></span>
         </div>
 
         <div>
             <input asp-for="Password" placeholder="Password" /><br />
-            <span asp-validation-for="Password"></span>
         </div>
 
         <div>

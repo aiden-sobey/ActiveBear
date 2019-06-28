@@ -1,22 +1,29 @@
 ﻿@model User
-@{}
+@{
+    var error = ViewBag.Error as string;
+}
+
+<div id="error_area">
+    @if (error != null)
+    {
+        <div id="error">@error</div>
+    }
+</div>
+
 <div id="input_area">
     <h2>Register</h2><br />
 
     <form method="post" asp-controller="User" asp-action="Register">
         <div>
             <input asp-for="Name" placeholder="User Name" />
-            <span asp-validation-for="Name"></span>
         </div>
 
         <div>
             <input asp-for="Description" placeholder="Description" />
-            <span asp-validation-for="Description"></span>
         </div>
 
         <div>
             <input asp-for="Password" placeholder="Password"/>
-            <span asp-validation-for="Password"></span>
         </div>
 
         <div>

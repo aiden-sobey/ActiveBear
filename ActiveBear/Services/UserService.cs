@@ -8,6 +8,7 @@ namespace ActiveBear.Services
     {
         public static User CreateUser(string name, string password, string description)
         {
+            User newUser = null;
             var context = DbService.NewDbContext();
 
             if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(password))
@@ -16,17 +17,19 @@ namespace ActiveBear.Services
             if (context.Users.Where(u => u.Name == name).Any())
                 return null;
 
-            var newUser = new User
+            newUser = new User
             {
                 Name = name,
                 Description = description,
-                Password = password //TODO: hash this
+                Password = password
             };
+            if (newUser.CookieId == Guid.Empty)
+                return newUser;
 
             context.Add(newUser);
             context.SaveChanges();
 
-            return newUser; //TODO: return null if user creation fails
+            return newUser;
         }
     }
 }

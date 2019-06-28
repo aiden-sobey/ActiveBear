@@ -39,8 +39,7 @@ namespace ActiveBear.Controllers
 
             if (existingUser == null)
             {
-                // TODO: figure out how to pass an error here
-                ViewBag.LoginError = "A user with those details was not found.";
+                ViewBag.Error = "Incorrect username/password";
                 return View();
             }
 
@@ -53,19 +52,27 @@ namespace ActiveBear.Controllers
         public IActionResult Register(User userRequest)
         {
             CookieService.DeleteUserCookie(Response);
-            // TODO: handle proper errors here
-            if (String.IsNullOrEmpty(userRequest.Name) ||
-                String.IsNullOrEmpty(userRequest.Password))
-                return View();
 
-            if (_context.Users.Where(u => u.Name == userRequest.Name).Any())
+            if (string.IsNullOrEmpty(userRequest.Name) ||
+                string.IsNullOrEmpty(userRequest.Password))
+            {
+                ViewBag.Error = "Name/Password cannot be empty";
                 return View();
+            }
+            
+            if (_context.Users.Where(u => u.Name == userRequest.Name).Any())
+            {
+                ViewBag.Error = "A user with that name already exists!";
+                return View();
+            }
 
             var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description);
             if (newUser != null)
                 return Redirect(Constants.Routes.Login);
-            else
-                return View(); //TODO: display relevant error
+
+            // Something went wrong...
+            ViewBag.Error = "An unknown error occured creating that user.";
+            return View();
         }
 
         public IActionResult Logout()

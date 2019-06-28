@@ -1,7 +1,15 @@
 ﻿@model ChannelAuth
 @{
     var channel = ViewBag.Channel as Channel;
+    var error = ViewBag.Error as string;
 }
+
+<div id="error_area">
+    @if (error != null)
+    {
+        <div id="error">@error</div>
+    }
+</div>
 
 <div id="input_area">
     <h3>Unlock access to: </h3>
