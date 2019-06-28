@@ -36,7 +36,8 @@ namespace ActiveBear.Services
 
             var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedMessage.Channel);
             var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedMessage.UserCookie);
-            if (channel == null || user == null) return new Message();
+            if (!ChannelAuthService.UserIsAuthed(channel, user) || channel == null || user == null)
+                return new Message();
 
             return NewMessage(user.Name, channel.Id, decodedMessage.Message);
         }
