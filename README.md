@@ -1,24 +1,26 @@
 # ActiveBear
-An Encrypted Messaging webapp written in C# / ASP.NET core.
+An Encrypted Messaging webapp written in C# and JavaScript using ASP.NET core.
 
 ## Security Features
 
 The purpose of this repo is to provide a simple, lightweight and easy to implement encrypted messaging solution.
 
 ActiveBear holds a number of user-created 'channels', each with a unique key.
-To be able to access a channel, users must first auth to a channel by entering the correct channel key. After that, they will have to enter the password on every page load.
+To be able to access a channel, users must first auth to a channel by entering the correct channel key. After that, they will have to enter the password on every page load. This key is then used to decrypt channel messages on the fly, so if the wrong password is entered on page load the messages will not be decipherable.
 
-Keys are hashed to a SHA-256 byte array ([see here](https://github.com/emn178/js-sha256)), then used to encrypt messages with an [AES-OFB block cipher](https://github.com/ricmoo/aes-js) algorithm.
+Client-side encryption is done with an [AES-OFB block cipher](https://github.com/ricmoo/aes-js) algorithm. Keys/passwords are first hashed to a SHA-256 byte array ([see here](https://github.com/emn178/js-sha256)) then used to encrypt messages to ensure a very high level of protection.
 
-Messages are encrypted end-to-end, so they are completely secure during transit and when stored. Decrypting is done on the fly and can only happen when the correct key has been supplied.
+All messages are encrypted end-to-end, so they are completely secure during transit and when stored. Decrypting is done on the fly and can only happen when the correct key has been supplied.
+
+Additionally, an SSL layer is used for server-client connections to prevent MITM attacks, request/response spoofing and eavesdropping.
 
 ## Privacy features
 
 ActiveBear uses one identity cookie to associate a web user with an account. This cookie stores no information itself except a reference to the account ID.
 
-No logs are kept. Note however the ISP/provider of the server may.
+ActiveBear keeps no logs whatsoever. Please note however that the person operating the server or their ISP may keep logs on usage.
 
-Client does not use analytics or any willful third-party tracking.
+ActiveBear does not use analytics or any willful third-party tracking.
 
 ## How to run it
 
@@ -35,4 +37,6 @@ Next, build the project in your IDE. When running, you should be able to use it 
 
 `https://localhost:5001`
 
-## How can I help to develop it?
+## How can I help development?
+
+We are more than happy for new developers to join in and lend a hand. Feel free to email the [project owner](mailto:sobey.aiden@gmail.com) if you'd like to help- in the meantime we will create issues for desired upgrades when there's time.
