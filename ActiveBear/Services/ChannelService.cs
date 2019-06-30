@@ -1,5 +1,4 @@
-﻿using System;
-using ActiveBear.Models;
+﻿using ActiveBear.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;

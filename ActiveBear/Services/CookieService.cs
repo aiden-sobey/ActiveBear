@@ -1,6 +1,5 @@
 ﻿using System;
 using ActiveBear.Models;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;

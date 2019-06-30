@@ -1,5 +1,3 @@
-using System;
-
 namespace ActiveBear.Models
 {
     public class ErrorViewModel
