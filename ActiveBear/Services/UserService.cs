@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Linq;
+using System.Threading.Tasks;
 using ActiveBear.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
     public static class UserService
     {
-        public static User CreateUser(string name, string password, string description)
+        public static async Task<User> CreateUser(string name, string password, string description)
         {
             User newUser = null;
             var context = DbService.NewDbContext();
 
-            if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
                 return null;
 
-            if (context.Users.Where(u => u.Name == name).Any())
+            var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Name == name);
+            if (existingUser != null)
                 return null;
 
             newUser = new User
@@ -27,7 +29,7 @@ namespace ActiveBear.Services
                 return newUser;
 
             context.Add(newUser);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return newUser;
         }

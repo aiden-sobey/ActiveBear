@@ -1,7 +1,8 @@
 ﻿using System;
 using ActiveBear.Models;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
@@ -17,34 +18,36 @@ namespace ActiveBear.Services
             response.Cookies.Append(Constants.User.CookieKey, user.CookieId.ToString(), cookieOption);
         }
 
-        public static User CurrentUser(HttpRequest request)
+        public static async Task<User> CurrentUser(HttpRequest request)
         {
             User currentUser = null;
+            var context = DbService.NewDbContext();
 
-            if (request.Cookies.ContainsKey(Constants.User.CookieKey))
+            if (!request.Cookies.ContainsKey(Constants.User.CookieKey))
+                return currentUser;
+
+            try
             {
-                try
-                {
-                    var requestCookie = Guid.Parse(request.Cookies[Constants.User.CookieKey]);
-                    currentUser = DbService.NewDbContext().Users.Where(u => u.CookieId == requestCookie).FirstOrDefault();
-                }
-                catch
-                {
-                    // Invalid cookie in the browser
-                }
+                var requestCookie = Guid.Parse(request.Cookies[Constants.User.CookieKey]);
+                currentUser = await context.Users.FirstOrDefaultAsync(u => u.CookieId == requestCookie);
+            }
+            catch
+            {
+                // Invalid cookie in the browser
+                return currentUser;
             }
 
             return currentUser;
         }
 
-        public static User CurrentUser(string userCookie)
+        public static async Task<User> CurrentUser(string userCookie)
         {
             var context = DbService.NewDbContext();
             var userGuid = Guid.Empty;
             try
             {
                 userGuid = Guid.Parse(userCookie);
-                return context.Users.FirstOrDefault(u => u.CookieId == userGuid);
+                return await context.Users.FirstOrDefaultAsync(u => u.CookieId == userGuid);
             }
             catch
             {

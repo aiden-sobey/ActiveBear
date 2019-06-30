@@ -1,15 +1,16 @@
-﻿using System;
-using ActiveBear.Models;
+﻿using ActiveBear.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using ActiveBear.Hubs;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
     public static class ChannelService
     {
-        public static Channel CreateChannel(string title, string key, User createUser)
+        public static async Task<Channel> CreateChannel(string title, string key, User createUser)
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(key) || createUser == null)
                 return null;
@@ -23,12 +24,12 @@ namespace ActiveBear.Services
             };
 
             context.Add(channel);
-            context.SaveChanges();
+            _ = await context.SaveChangesAsync();
 
             return channel;
         }
 
-        public static Channel CreateChannel(string channelCreationPacket)
+        public static async Task<Channel> CreateChannel(string channelCreationPacket)
         {
             ChannelCreationPacket packet;
             try
@@ -40,26 +41,26 @@ namespace ActiveBear.Services
                 return null;
             }
 
-            var user = CookieService.CurrentUser(packet.UserCookie);
-            return CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
+            var user = await CookieService.CurrentUser(packet.UserCookie);
+            return await CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
         }
 
-        public static List<Message> MessagesFor(Channel channel)
+        public static async Task<List<Message>> MessagesFor(Channel channel)
         {
             var context = DbService.NewDbContext();
-            return context.Messages.Where(m => m.Channel == channel.Id).ToList();
+            return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
         }
 
-        public static List<Message> MessagesFor(string channelInfoPacket)
+        public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
         {
             var context = DbService.NewDbContext();
             var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
 
-            var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedPacket.Channel);
-            var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedPacket.UserCookie);
-
-            if (ChannelAuthService.UserIsAuthed(channel, user))
-                return context.Messages.Where(m => m.Channel == channel.Id).ToList();
+            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedPacket.Channel);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedPacket.UserCookie);
+            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
+            if (auth)
+                return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
 
             return new List<Message>();
         }

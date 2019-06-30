@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace ActiveBear.Models
 {
@@ -28,16 +26,6 @@ namespace ActiveBear.Models
             Status = Constants.Channel.Status.Active;
             CreateDate = DateTime.Now;
             _context = context;
-        }
-
-        public List<User> AuthorisedUsers()
-        {
-            return new List<User>();
-        }
-
-        public List<Message> GetMessages()
-        {
-            return _context.Messages.Where(m => m.Channel == Id).ToList();
         }
     }
 }

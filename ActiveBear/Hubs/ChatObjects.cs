@@ -4,7 +4,6 @@
 // passed to-from the JavaScript.
 namespace ActiveBear.Hubs
 {
-
     // MessagePacket is sent from JS when a message is sent, and contains data
     // neccessary for the server to construct a Message object.
     [DataContract]

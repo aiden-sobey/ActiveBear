@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Controllers
 {
@@ -16,9 +16,10 @@ namespace ActiveBear.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
-            if (CookieService.CurrentUser(Request) != null)
+            var currentUser = await CookieService.CurrentUser(Request);
+            if (currentUser != null)
                 return Redirect(Constants.Routes.Home);
 
             return View();
@@ -31,11 +32,11 @@ namespace ActiveBear.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(User user)
+        public async Task<IActionResult> Login(User user)
         {
             CookieService.DeleteUserCookie(Response);
-            var existingUser = _context.Users.Where(u => u.Name == user.Name &&
-                                                    u.Password == user.Password).FirstOrDefault();
+            var existingUser = await _context.Users.FirstOrDefaultAsync
+                (u => u.Name == user.Name && u.Password == user.Password);
 
             if (existingUser == null)
             {
@@ -49,7 +50,7 @@ namespace ActiveBear.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(User userRequest)
+        public async Task<IActionResult> Register(User userRequest)
         {
             CookieService.DeleteUserCookie(Response);
 
@@ -59,14 +60,21 @@ namespace ActiveBear.Controllers
                 ViewBag.Error = "Name/Password cannot be empty";
                 return View();
             }
-            
-            if (_context.Users.Where(u => u.Name == userRequest.Name).Any())
+
+            if (userRequest.Password.Length < 12)
+            {
+                ViewBag.Error = "Password must be at least 12 characters!";
+                return View();
+            }
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Name == userRequest.Name);
+            if (existingUser != null)
             {
                 ViewBag.Error = "A user with that name already exists!";
                 return View();
             }
 
-            var newUser = UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description);
+            var newUser = await UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description);
             if (newUser != null)
                 return Redirect(Constants.Routes.Login);
 

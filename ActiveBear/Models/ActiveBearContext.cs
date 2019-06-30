@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using ActiveBear.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Models
 {

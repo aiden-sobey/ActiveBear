@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Encodings.Web;
 using ActiveBear.Models;
 using Microsoft.EntityFrameworkCore;
 using ActiveBear.Services;
@@ -19,17 +15,17 @@ namespace ActiveBear.Controllers
             _context = context;
         }
 
-        public IActionResult ViewAll()
+        public async Task<IActionResult> ViewAll()
         {
-            var currentUser = CookieService.CurrentUser(Request);
+            var currentUser = await CookieService.CurrentUser(Request);
 
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
 
             ViewBag.CurrentUser = currentUser;
-            ViewBag.Messages = _context.Messages.ToList();
-            ViewBag.Channels = _context.Channels.ToList();
-            ViewBag.Users = _context.Users.ToList();
+            ViewBag.Messages = await _context.Messages.ToListAsync();
+            ViewBag.Channels = await _context.Channels.ToListAsync();
+            ViewBag.Users = await _context.Users.ToListAsync();
 
             return View();
         }

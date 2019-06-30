@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ActiveBear.Messages;
 using System.ComponentModel.DataAnnotations;
 
 namespace ActiveBear.Models

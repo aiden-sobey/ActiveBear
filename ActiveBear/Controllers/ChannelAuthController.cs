@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Controllers
 {
@@ -16,20 +17,20 @@ namespace ActiveBear.Controllers
         }
 
         [HttpGet]
-        public IActionResult AuthUserToChannel(Guid? id)
+        public async Task<IActionResult> AuthUserToChannel(Guid? id)
         {
             if (id == null)
                 return NotFound();
 
-            var channel = _context.Channels.Where(c => c.Id == id).FirstOrDefault();
-            var currentUser = CookieService.CurrentUser(Request);
+            var channel = await _context.Channels.FirstOrDefaultAsync(c => c.Id == id);
+            var currentUser = await CookieService.CurrentUser(Request);
             if (channel == null || currentUser == null)
                 return NotFound();
 
-            if (ChannelAuthService.UserIsAuthed(channel, currentUser))
-            {
+            var auth = await ChannelAuthService.UserIsAuthed(channel, currentUser);
+
+            if (auth)
                 return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id.ToString());
-            }
 
             // User is not already authed, they need to enter the password
             ViewBag.Channel = channel;
@@ -37,20 +38,20 @@ namespace ActiveBear.Controllers
         }
 
         [HttpPost]
-        public IActionResult AuthUserToChannel(Guid? id, ChannelAuth channelAuth)
+        public async Task<IActionResult> AuthUserToChannel(Guid? id, ChannelAuth channelAuth)
         {
             if (id == null)
                 return NotFound();
 
-            var channel = _context.Channels.Where(c => c.Id == id).FirstOrDefault();
-            var currentUser = CookieService.CurrentUser(Request);
+            var channel = await _context.Channels.FirstOrDefaultAsync(c => c.Id == id);
+            var currentUser = await CookieService.CurrentUser(Request);
             if (channel == null || currentUser == null)
                 return NotFound();
 
             var hashedInput = EncryptionService.Sha256(channelAuth.HashedKey);
             if (hashedInput == channel.KeyHash)
             {
-                ChannelAuthService.CreateAuth(channel, currentUser);
+                await ChannelAuthService.CreateAuth(channel, currentUser);
                 return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id);
             }
 

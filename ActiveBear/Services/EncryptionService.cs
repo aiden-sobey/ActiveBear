@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.DataProtection;
 using System.Security.Cryptography;
 using System.IO;
 using System.Text;
@@ -21,9 +16,9 @@ namespace ActiveBear.Services
         private static string _salt = "aselrias38490a32"; // Random
         private static string _vector = "8947az34awl34kjq"; // Random
 
+        // TODO: async?
         public static string Sha256(string rawData)
         {
-            // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
             {
                 StringBuilder builder = new StringBuilder();
