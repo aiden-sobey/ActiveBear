@@ -26,7 +26,7 @@ namespace ActiveBear.Hubs
             // Group membership automatically expires on connection loss
             await Groups.AddToGroupAsync(Context.ConnectionId, ChatHubHelper.GroupFor(channelInfoPacket));
 
-            var channelMessages = JsonConvert.SerializeObject(ChannelService.MessagesForAsync(channelInfoPacket));
+            var channelMessages = JsonConvert.SerializeObject(await ChannelService.MessagesFor(channelInfoPacket));
             await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
 
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Controllers
 {
@@ -22,7 +23,7 @@ namespace ActiveBear.Controllers
             if (id == null)
                 return NotFound();
 
-            var channel = _context.Channels.Where(x => x.Id == id).FirstOrDefault();
+            var channel = await _context.Channels.FirstOrDefaultAsync(x => x.Id == id);
             if (channel == null)
                 return NotFound();
 

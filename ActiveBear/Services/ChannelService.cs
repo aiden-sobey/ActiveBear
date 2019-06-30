@@ -11,7 +11,7 @@ namespace ActiveBear.Services
 {
     public static class ChannelService
     {
-        public static Channel CreateChannel(string title, string key, User createUser)
+        public static async Task<Channel> CreateChannel(string title, string key, User createUser)
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(key) || createUser == null)
                 return null;
@@ -25,7 +25,7 @@ namespace ActiveBear.Services
             };
 
             context.Add(channel);
-            context.SaveChanges();
+            _ = await context.SaveChangesAsync();
 
             return channel;
         }
@@ -43,16 +43,16 @@ namespace ActiveBear.Services
             }
 
             var user = await CookieService.CurrentUser(packet.UserCookie);
-            return CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
+            return await CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
         }
 
-        public static List<Message> MessagesFor(Channel channel)
+        public static async Task<List<Message>> MessagesFor(Channel channel)
         {
             var context = DbService.NewDbContext();
-            return context.Messages.Where(m => m.Channel == channel.Id).ToList();
+            return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
         }
 
-        public static async Task<List<Message>> MessagesForAsync(string channelInfoPacket)
+        public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
         {
             var context = DbService.NewDbContext();
             var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
@@ -61,7 +61,7 @@ namespace ActiveBear.Services
             var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedPacket.UserCookie);
             var auth = await ChannelAuthService.UserIsAuthed(channel, user);
             if (auth)
-                return context.Messages.Where(m => m.Channel == channel.Id).ToList();
+                return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
 
             return new List<Message>();
         }

@@ -37,7 +37,6 @@ namespace ActiveBear.Services
                 // Invalid cookie in the browser
                 return currentUser;
             }
-            
 
             return currentUser;
         }

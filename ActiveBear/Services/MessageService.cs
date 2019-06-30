@@ -46,21 +46,21 @@ namespace ActiveBear.Services
             return message;
         }
 
-        public static List<Message> ChannelMessages(Channel channel)
+        public static async Task<List<Message>> ChannelMessages(Channel channel)
         {
             var context = DbService.NewDbContext();
-            var messages = context.Messages.Where(m => m.Channel == channel.Id).ToList();
+            var messages = await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
 
             return messages;
         }
 
-        public static Dictionary<Message, User> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)
+        public static async Task<Dictionary<Message, User>> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)
         {
             var link = new Dictionary<Message, User>();
 
             foreach (var message in messages)
             {
-                var user = context.Users.Where(u => u.Name == message.Sender).FirstOrDefault();
+                var user = await context.Users.FirstOrDefaultAsync(u => u.Name == message.Sender);
                 if (user != null)
                     link.Add(message, user);
             }

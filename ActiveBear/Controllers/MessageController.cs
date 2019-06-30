@@ -27,9 +27,9 @@ namespace ActiveBear.Controllers
                 return Redirect(Constants.Routes.Login);
 
             ViewBag.CurrentUser = currentUser;
-            ViewBag.Messages = _context.Messages.ToList();
-            ViewBag.Channels = _context.Channels.ToList();
-            ViewBag.Users = _context.Users.ToList();
+            ViewBag.Messages = await _context.Messages.ToListAsync();
+            ViewBag.Channels = await _context.Channels.ToListAsync();
+            ViewBag.Users = await _context.Users.ToListAsync();
 
             return View();
         }

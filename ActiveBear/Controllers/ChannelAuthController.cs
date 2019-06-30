@@ -52,7 +52,7 @@ namespace ActiveBear.Controllers
             var hashedInput = EncryptionService.Sha256(channelAuth.HashedKey);
             if (hashedInput == channel.KeyHash)
             {
-                ChannelAuthService.CreateAuth(channel, currentUser);
+                await ChannelAuthService.CreateAuth(channel, currentUser);
                 return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id);
             }
 
