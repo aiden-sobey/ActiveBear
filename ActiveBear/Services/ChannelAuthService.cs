@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using ActiveBear.Models;
+﻿using ActiveBear.Models;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
     public static class ChannelAuthService
     {
-        public static void CreateAuth(Channel channel, User user)
+        public static async Task CreateAuth(Channel channel, User user)
         {
             var context = DbService.NewDbContext();
 
@@ -19,16 +18,17 @@ namespace ActiveBear.Services
             };
 
             context.Add(channelAuth);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public static bool UserIsAuthed(Channel channel, User user)
+        public static async Task<bool> UserIsAuthed(Channel channel, User user)
         {
             if (channel == null || user == null)
                 return false;
 
             var context = DbService.NewDbContext();
-            var auth = context.ChannelAuths.FirstOrDefault(au => au.Channel == channel.Id && au.User == user.CookieId);
+            var auth = await context.ChannelAuths.FirstOrDefaultAsync(au => au.Channel == channel.Id &&
+                                                                            au.User == user.CookieId);
 
             return auth != null;
         }

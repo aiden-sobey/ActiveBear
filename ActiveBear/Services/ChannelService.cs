@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using ActiveBear.Hubs;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
@@ -28,7 +30,7 @@ namespace ActiveBear.Services
             return channel;
         }
 
-        public static Channel CreateChannel(string channelCreationPacket)
+        public static async Task<Channel> CreateChannel(string channelCreationPacket)
         {
             ChannelCreationPacket packet;
             try
@@ -40,7 +42,7 @@ namespace ActiveBear.Services
                 return null;
             }
 
-            var user = CookieService.CurrentUser(packet.UserCookie);
+            var user = await CookieService.CurrentUser(packet.UserCookie);
             return CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
         }
 
@@ -50,15 +52,15 @@ namespace ActiveBear.Services
             return context.Messages.Where(m => m.Channel == channel.Id).ToList();
         }
 
-        public static List<Message> MessagesFor(string channelInfoPacket)
+        public static async Task<List<Message>> MessagesForAsync(string channelInfoPacket)
         {
             var context = DbService.NewDbContext();
             var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
 
-            var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedPacket.Channel);
-            var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedPacket.UserCookie);
-
-            if (ChannelAuthService.UserIsAuthed(channel, user))
+            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedPacket.Channel);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedPacket.UserCookie);
+            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
+            if (auth)
                 return context.Messages.Where(m => m.Channel == channel.Id).ToList();
 
             return new List<Message>();

@@ -27,7 +27,7 @@ namespace ActiveBear
                 {
                     var context = services.GetRequiredService<ActiveBearContext>();
                     context.Database.Migrate();
-                    SeedData.Initialize(services);
+                    _ = SeedData.Initialize(services);
                 }
                 catch (Exception ex)
                 {

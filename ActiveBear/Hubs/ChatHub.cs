@@ -14,7 +14,7 @@ namespace ActiveBear.Hubs
             if (string.IsNullOrEmpty(messagePacket)) return;
 
             // Create a message from the serialized packet
-            var message = MessageService.NewMessageFromPacket(messagePacket);
+            var message = await MessageService.NewMessageFromPacket(messagePacket);
 
             await Clients.Group(ChatHubHelper.GroupFor(messagePacket)).SendAsync
                 ("ReceiveMessage", message.EncryptedContents);
@@ -26,7 +26,7 @@ namespace ActiveBear.Hubs
             // Group membership automatically expires on connection loss
             await Groups.AddToGroupAsync(Context.ConnectionId, ChatHubHelper.GroupFor(channelInfoPacket));
 
-            var channelMessages = JsonConvert.SerializeObject(ChannelService.MessagesFor(channelInfoPacket));
+            var channelMessages = JsonConvert.SerializeObject(ChannelService.MessagesForAsync(channelInfoPacket));
             await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
 
         }
@@ -34,7 +34,7 @@ namespace ActiveBear.Hubs
         // Attempt to create a new channel from the given data
         public async Task CreateChannel(string channelCreationPacket)
         {
-            Channel channel = ChannelService.CreateChannel(channelCreationPacket);
+            Channel channel = await ChannelService.CreateChannel(channelCreationPacket);
 
             if (channel != null)
                 await Clients.Caller.SendAsync("ChannelCreated", channel.Id);

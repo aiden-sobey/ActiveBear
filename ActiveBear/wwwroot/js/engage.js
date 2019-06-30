@@ -24,7 +24,7 @@ connection.on(ReceiveMessage, function (message) {
 
 connection.on(ReceiveAllMessages, function (messageList) {
 	var messages = JSON.parse(messageList);
-	messages.forEach(function(message) {
+	messages.Result.forEach(function(message) {
 		Messager.CreateMessageBubble(message.EncryptedContents);
 	});
 });

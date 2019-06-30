@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ActiveBear.Hubs;
 using ActiveBear.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace ActiveBear.Services
 {
     public static class MessageService
     {
-        public static Message NewMessage(string senderName, Guid channelId, string content)
+        public static async Task<Message> NewMessage(string senderName, Guid channelId, string content)
         {
             if (string.IsNullOrEmpty(senderName) || channelId == Guid.Empty || string.IsNullOrEmpty(content))
                 return null;
@@ -24,22 +26,24 @@ namespace ActiveBear.Services
             };
 
             context.Add(newMessage);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return newMessage;
         }
 
-        public static Message NewMessageFromPacket(string messagePacket)
+        public static async Task<Message> NewMessageFromPacket(string messagePacket)
         {
             var context = DbService.NewDbContext();
             var decodedMessage = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
 
-            var channel = context.Channels.FirstOrDefault(c => c.Id.ToString() == decodedMessage.Channel);
-            var user = context.Users.FirstOrDefault(u => u.CookieId.ToString() == decodedMessage.UserCookie);
-            if (!ChannelAuthService.UserIsAuthed(channel, user) || channel == null || user == null)
+            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedMessage.Channel);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedMessage.UserCookie);
+            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
+            if (!auth || channel == null || user == null)
                 return new Message();
 
-            return NewMessage(user.Name, channel.Id, decodedMessage.Message);
+            var message = await NewMessage(user.Name, channel.Id, decodedMessage.Message);
+            return message;
         }
 
         public static List<Message> ChannelMessages(Channel channel)

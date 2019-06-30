@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,7 @@ namespace ActiveBear.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Engage(Guid? id)
+        public async Task<IActionResult> Engage(Guid? id)
         {
             if (id == null)
                 return NotFound();
@@ -31,11 +27,11 @@ namespace ActiveBear.Controllers
                 return NotFound();
 
             // Check the current user is authorised
-            var currentUser = CookieService.CurrentUser(Request);
+            var currentUser = await CookieService.CurrentUser(Request);
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
-
-            if (!ChannelAuthService.UserIsAuthed(channel, currentUser))
+            var auth = await ChannelAuthService.UserIsAuthed(channel, currentUser);
+            if (!auth)
                 return Redirect(Constants.Routes.AuthUserToChannel + id.ToString());
 
             return View();

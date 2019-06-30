@@ -19,9 +19,9 @@ namespace ActiveBear.Controllers
             _context = context;
         }
 
-        public IActionResult ViewAll()
+        public async Task<IActionResult> ViewAll()
         {
-            var currentUser = CookieService.CurrentUser(Request);
+            var currentUser = await CookieService.CurrentUser(Request);
 
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
