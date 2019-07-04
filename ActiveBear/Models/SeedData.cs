@@ -17,14 +17,13 @@ namespace ActiveBear.Models
                 // Look for any messages.
                 if (context.Channels.Any())
                     return;   // DB has been seeded
-
+                
                 // Create Users
-                var userOne = await UserService.CreateUser("Aiden", "admin", "The admin of the site");
-                var userTwo = await UserService.CreateUser("Tom", "NIM", "OG comrade");
-                var userThree = await UserService.CreateUser("Claudine", "enc", "The GF");
+                var userOne = await UserService.CreateUser("UserOne", "abcdefg", "The first user.");
+                var userTwo = await UserService.CreateUser("UserTwo", "qwerty", "The second user.");
 
                 // Create channels
-                var channel = ChannelService.CreateChannel("TCIP", "activebear", userOne);
+                var channel = ChannelService.CreateChannel("Public", "general", userOne);
                 var channelTwo = ChannelService.CreateChannel("SecretRoom", "starcraft", userTwo);
             }
         }

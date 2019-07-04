@@ -50,6 +50,7 @@ namespace ActiveBear
             else
             {
                 // TODO: update this with an existing action
+                app.UseStaticFiles();
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }

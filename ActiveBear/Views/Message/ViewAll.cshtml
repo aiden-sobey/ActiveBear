@@ -6,43 +6,21 @@
     var currentUser = ViewBag.CurrentUser as User;
 }
 
-<h3>Welcome back @currentUser.Name</h3>
-<h5>Site Overview - <a href="/User/Logout">Logout</a></h5>
-
-Channels - <a asp-controller="Channel" asp-action="Create">Create a channel</a>
-<ul>
-    @foreach(var channel in channels)
+<div id="channel_display">
+    <h3>Welcome back @currentUser.Name</h3>
+    <h4>
+        <a asp-controller="Channel" asp-action="Create">Create Channel</a>
+        or
+        <a href="/User/Logout">Logout</a>
+    </h4><br />
+    <h4>Available Channels</h4>
+    @foreach (var channel in channels)
     {
-        <li>@channel.Title</li>
-        <ul>
-            <li><a asp-controller="ChannelAuth" asp-action="AuthUserToChannel" asp-route-id="@channel.Id">@channel.Id</a></li>
-        </ul>
+        <div>
+            <h4>
+                <a asp-controller="ChannelAuth" asp-action="AuthUserToChannel" asp-route-id="@channel.Id">@channel.Title</a>
+            </h4>
+            created by @channel.CreateUser on @channel.CreateDate.Day/@channel.CreateDate.Month/@channel.CreateDate.Year
+        </div><br />
     }
-</ul>
-
-Users
-<ul>
-    @foreach (var user in users)
-    {
-        <li>@user.Name</li>
-        <ul>
-            <li>Description: @user.Description</li>
-            <li>Password: @user.Password</li>
-            <li>Cookie: @user.CookieId.ToString()</li>
-        </ul>
-    }
-</ul>
-
-Messages
-<ul>
-    @foreach (var message in messages)
-    {
-        <li>@message.Id</li>
-        <ul>
-            <li>Channel: @message.Channel</li>
-            <li>Contents: @message.EncryptedContents</li>
-            <li>User: @message.Sender</li>
-        </ul>
-        <br />
-    }
-</ul>
+</div>

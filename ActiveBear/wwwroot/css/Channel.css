@@ -99,3 +99,7 @@ input {
     padding-left: 15px;
     padding-right: 15px;
 }
+
+#channel_display {
+    text-align: center;
+}

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using ActiveBear.Models;
 using Microsoft.AspNetCore;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace ActiveBear
 {
@@ -27,7 +25,10 @@ namespace ActiveBear
                 {
                     var context = services.GetRequiredService<ActiveBearContext>();
                     context.Database.Migrate();
-                    _ = SeedData.Initialize(services);
+                    var isDev = new HostingEnvironment().IsDevelopment();
+
+                    if (isDev)
+                        _ = SeedData.Initialize(services);
                 }
                 catch (Exception ex)
                 {
