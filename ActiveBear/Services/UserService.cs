@@ -15,7 +15,7 @@ namespace ActiveBear.Services
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
                 return null;
 
-            var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Name == name);
+            var existingUser = await ExistingUser(name);
             if (existingUser != null)
                 return null;
 
@@ -23,7 +23,7 @@ namespace ActiveBear.Services
             {
                 Name = name,
                 Description = description,
-                Password = password
+                Password = EncryptionService.Sha256(password)
             };
             if (newUser.CookieId == Guid.Empty)
                 return newUser;
@@ -32,6 +32,18 @@ namespace ActiveBear.Services
             await context.SaveChangesAsync();
 
             return newUser;
+        }
+
+        public static async Task<User> ExistingUser(string name, string password = "")
+        {
+            var context = DbService.NewDbContext();
+            if (string.IsNullOrEmpty(password))
+                return await context.Users.FirstOrDefaultAsync(u => u.Name == name);
+
+            // Match on password too
+            var hashedPassword = EncryptionService.Sha256(password);
+            return await context.Users.FirstOrDefaultAsync(u => u.Name == name &&
+                                                                u.Password == hashedPassword);
         }
     }
 }

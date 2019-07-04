@@ -35,8 +35,7 @@ namespace ActiveBear.Controllers
         public async Task<IActionResult> Login(User user)
         {
             CookieService.DeleteUserCookie(Response);
-            var existingUser = await _context.Users.FirstOrDefaultAsync
-                (u => u.Name == user.Name && u.Password == user.Password);
+            var existingUser = await UserService.ExistingUser(user.Name, user.Password);
 
             if (existingUser == null)
             {
@@ -67,7 +66,7 @@ namespace ActiveBear.Controllers
                 return View();
             }
 
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Name == userRequest.Name);
+            var existingUser = await UserService.ExistingUser(userRequest.Name);
             if (existingUser != null)
             {
                 ViewBag.Error = "A user with that name already exists!";
