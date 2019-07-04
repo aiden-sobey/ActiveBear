@@ -18,14 +18,15 @@ messageInput.addEventListener("keydown", function(event) {
 
 // Receive actions
 
-connection.on(ReceiveMessage, function (message) {
+connection.on(ReceiveMessage, function (messageBlob) {
+	var message = JSON.parse(messageBlob);
 	Messager.CreateMessageBubble(message);
 });
 
 connection.on(ReceiveAllMessages, function (messageList) {
 	var messages = JSON.parse(messageList);
 	messages.forEach(function(message) {
-		Messager.CreateMessageBubble(message.EncryptedContents);
+		Messager.CreateMessageBubble(message);
 	});
 });
 

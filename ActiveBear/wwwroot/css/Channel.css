@@ -19,14 +19,6 @@ input {
     font-weight: bold;
 }
 
-.message_author {
-    float: left;
-    text-align: center;
-    width: 100px;
-    height: 100%;
-    vertical-align: middle;
-}
-
 #messaging_footer {
     padding-top: 15px;
     width: 100%;
@@ -59,7 +51,7 @@ input {
     text-align: center;
 }
 
-.message_contents {
+.message {
     -webkit-box-sizing: content-box;
     -moz-box-sizing: content-box;
     box-sizing: content-box;
@@ -67,7 +59,7 @@ input {
     padding: 10px;
     overflow: hidden;
     border: none;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     -webkit-border-radius: 11px;
     border-radius: 11px;
     font: normal 16px/1 "Times New Roman", Times, serif;

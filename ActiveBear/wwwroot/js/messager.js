@@ -9,11 +9,18 @@ class Messager {
 
 	static CreateMessageBubble(message) {
 		if (message === null || message === "") return;
-		var decryptedText = Encryption.AesDecrypt(message);
+		var decryptedText = Encryption.AesDecrypt(message.EncryptedContents);
 		if (decryptedText === null) return;
 
+		// Author box	
+		var authorBubble = document.createElement("div");
+		authorBubble.setAttribute('class', 'message_author');
+		authorBubble.textContent = message.Sender;;
+		messageContainer.appendChild(authorBubble);
+
+		// Message box
 		var messageBubble = document.createElement("div");
-		messageBubble.setAttribute('class', 'message_contents');
+		messageBubble.setAttribute('class', 'message');
 		messageBubble.textContent = decryptedText;
 		messageContainer.appendChild(messageBubble);
 		this.UpdateScroll();

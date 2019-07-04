@@ -15,9 +15,9 @@ namespace ActiveBear.Hubs
 
             // Create a message from the serialized packet
             var message = await MessageService.NewMessageFromPacket(messagePacket);
-
+            var messageBlob = JsonConvert.SerializeObject(message);
             await Clients.Group(ChatHubHelper.GroupFor(messagePacket)).SendAsync
-                ("ReceiveMessage", message.EncryptedContents);
+                ("ReceiveMessage", messageBlob);
         }
 
         // Client has requested all messages for this channel
