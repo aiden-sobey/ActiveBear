@@ -44,4 +44,13 @@ namespace ActiveBear.Hubs
         [DataMember]
         public string ChannelKey = string.Empty;
     }
+
+    // CookiePacket contains the user cookie of the current user.
+    // We can process this to lookup the relevant User in the database.
+    [DataContract]
+    class CookiePacket
+    {
+        [DataMember]
+        public string UserCookie = string.Empty;
+    }
 }

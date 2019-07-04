@@ -1,10 +1,13 @@
 ﻿"use strict";
 
+// Methods invokable by SignalR
 var ReceiveMessage = "ReceiveMessage";
-var ReceiveAllMessages= "ReceiveAllMessages";
+var ReceiveAllMessages = "ReceiveAllMessages";
+var CurrentUser = "CurrentUser";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
+var currentUser = document.getElementById("currentUser"); // TODO: dont use DOM for this
 var messageInput = document.getElementById("messageInput");
 var passwordInput = document.getElementById("passwordInput");
 var messageContainer = document.getElementById("container");
@@ -23,6 +26,10 @@ connection.on(ReceiveMessage, function (messageBlob) {
 	Messager.CreateMessageBubble(message);
 });
 
+connection.on(CurrentUser, function (user) {
+    currentUser.innerHTML = user;
+});
+
 connection.on(ReceiveAllMessages, function (messageList) {
 	var messages = JSON.parse(messageList);
 	messages.forEach(function(message) {
@@ -34,6 +41,7 @@ connection.on(ReceiveAllMessages, function (messageList) {
 
 connection.start().then(function(){
 	Messager.AuthenticateChannel();
+	ChatHub.GetCurrentUser();
 	ChatHub.RequestAllMessages();
 
 }).catch(function (err) {

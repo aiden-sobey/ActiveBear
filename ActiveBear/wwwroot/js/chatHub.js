@@ -15,7 +15,13 @@ class ChatHub {
 			return console.error(err.toString());
 		});
 		messageInput.value = "";
-	}
+    }
+
+    static GetCurrentUser() {
+        connection.invoke(CurrentUser, this.GenerateCookiePacket()).catch(function (err) {
+            return console.error(err.toString());
+        })
+    }
 
 	static RequestAllMessages() {
 		connection.invoke(GetChannelMessages, this.GenerateChannelPacket()).catch(function (err) {
@@ -31,7 +37,7 @@ class ChatHub {
 
 	// Runtime values
 
-	static CurrentUser() {
+	static CurrentUserCookie() {
 		return document.cookie.split("User=")[1].split("; ")[0];
 	}
 
@@ -43,16 +49,23 @@ class ChatHub {
 
 	static GenerateMessagePacket(message) {
 		var packet = {
-			UserCookie: this.CurrentUser(),
+			UserCookie: this.CurrentUserCookie(),
 			Channel: this.CurrentChannel(),
 			Message: message
 		}
 		return JSON.stringify(packet);
-	}
+    }
+
+    static GenerateCookiePacket() {
+        var packet = {
+            UserCookie: this.CurrentUserCookie(),
+        }
+        return JSON.stringify(packet);
+    }
 
 	static GenerateChannelPacket() {
 		var packet = {
-			UserCookie: this.CurrentUser(),
+			UserCookie: this.CurrentUserCookie(),
 			Channel: this.CurrentChannel()
 		}
 
@@ -61,7 +74,7 @@ class ChatHub {
 
 	static GenerateChannelCreationPacket(title, key) {
 		var packet = {
-			UserCookie: this.CurrentUser(),
+			UserCookie: this.CurrentUserCookie(),
 			ChannelTitle: title,
 			ChannelKey: key
 		}

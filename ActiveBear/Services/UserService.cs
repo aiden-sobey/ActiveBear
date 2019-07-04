@@ -45,5 +45,13 @@ namespace ActiveBear.Services
             return await context.Users.FirstOrDefaultAsync(u => u.Name == name &&
                                                                 u.Password == hashedPassword);
         }
+
+        public static async Task<User> ExistingUser(Guid cookieId)
+        {
+            var context = DbService.NewDbContext();
+            if (cookieId == Guid.Empty) return null;
+
+            return await context.Users.FirstOrDefaultAsync(u => u.CookieId == cookieId);
+        }
     }
 }

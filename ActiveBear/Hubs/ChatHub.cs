@@ -3,11 +3,24 @@ using System.Threading.Tasks;
 using ActiveBear.Services;
 using ActiveBear.Models;
 using Newtonsoft.Json;
+using System;
 
 namespace ActiveBear.Hubs
 {
     public class ChatHub : Hub
     {
+        // Client requests the current user (lookup by cookieID)
+        public async Task CurrentUser(string cookiePacket)
+        {
+            if (string.IsNullOrEmpty(cookiePacket)) return;
+            var userCookie = JsonConvert.DeserializeObject<CookiePacket>(cookiePacket).UserCookie;
+            var currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+            if (currentUser == null) return;
+
+            // We just want to send the name, not the whole user object
+            await Clients.Caller.SendAsync("CurrentUser", currentUser.Name);
+        }
+
         // Client has sent us a message
         public async Task SendMessage(string messagePacket)
         {
