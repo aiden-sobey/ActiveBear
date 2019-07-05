@@ -1,6 +1,8 @@
 # ActiveBear
 An Encrypted Messaging webapp written in C# and JavaScript using ASP.NET core.
 
+You can try it out on the official server at https://activebear.in
+
 ## Security Features
 
 The purpose of this repo is to provide a simple, lightweight and easy to implement encrypted messaging solution.
