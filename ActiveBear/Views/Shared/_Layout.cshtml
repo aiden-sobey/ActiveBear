@@ -19,7 +19,7 @@
         </environment>
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="navbar">
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand" asp-controller="Message" asp-action="ViewAll">ActiveBear</a>
@@ -67,6 +67,15 @@
                     crossorigin="anonymous"
                     integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"></script>
             <script src="~/js/site.min.js" asp-append-version="true"></script>
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+            <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+            <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+            <script src="~/js/sha256.js"></script>
+            <script src="~/js/encryption.js"></script>
+            <script src="~/js/messager.js"></script>
+            <script src="~/js/chatHub.js"></script>
         </environment>
 
         @RenderSection("Scripts", required: false)

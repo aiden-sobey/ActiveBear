@@ -23,7 +23,15 @@ class Messager {
 		messageBubble.setAttribute('class', 'message');
 		messageBubble.textContent = decryptedText;
 		messageContainer.appendChild(messageBubble);
-		this.UpdateScroll();
+
+		if (currentUser.innerHTML == message.Sender) {
+			messageBubble.style.textAlign = "right";
+            messageBubble.style.backgroundColor = "#af2dcc";
+			authorBubble.style.textAlign = "right";
+			authorBubble.textContent = "You";
+        }
+
+        this.UpdateScroll();
 	}
 
 	// Helpers
