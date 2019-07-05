@@ -15,7 +15,7 @@ class Messager {
 		// Author box	
 		var authorBubble = document.createElement("div");
 		authorBubble.setAttribute('class', 'message_author');
-		authorBubble.textContent = message.Sender;;
+		authorBubble.textContent = message.Sender;
 		messageContainer.appendChild(authorBubble);
 
 		// Message box
@@ -32,6 +32,15 @@ class Messager {
         }
 
         this.UpdateScroll();
+	}
+
+	static Notification(message) {
+		if (message === null || message === "") return;
+		var notification = document.createElement("div");
+		notification.setAttribute('class', 'notification');
+		notification.textContent = message;
+		messageContainer.appendChild(notification);
+		this.UpdateScroll();
 	}
 
 	// Helpers

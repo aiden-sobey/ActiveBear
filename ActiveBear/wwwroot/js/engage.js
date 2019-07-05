@@ -4,6 +4,7 @@
 var ReceiveMessage = "ReceiveMessage";
 var ReceiveAllMessages = "ReceiveAllMessages";
 var CurrentUser = "CurrentUser";
+var Notification = "Notification";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
@@ -36,6 +37,10 @@ connection.on(ReceiveAllMessages, function (messageList) {
 	messages.forEach(function(message) {
 		Messager.CreateMessageBubble(message);
 	});
+});
+
+connection.on(Notification, function(message) {
+	Messager.Notification(message);
 });
 
 // Connection

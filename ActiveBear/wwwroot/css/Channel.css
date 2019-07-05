@@ -13,6 +13,11 @@ input {
     margin-right: 20px;
 }
 
+.notification {
+    text-align: center;
+    font-weight: bold;
+}
+
 .footer {
     position: fixed;
     left: 0;

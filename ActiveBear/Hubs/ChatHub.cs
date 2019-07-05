@@ -36,13 +36,19 @@ namespace ActiveBear.Hubs
         // Client has requested all messages for this channel
         public async Task GetChannelMessages(string channelInfoPacket)
         {
-            // Group membership automatically expires on connection loss
-            await Groups.AddToGroupAsync(Context.ConnectionId, ChatHubHelper.GroupFor(channelInfoPacket));
-
             var messages = await ChannelService.MessagesFor(channelInfoPacket);
             var channelMessages = JsonConvert.SerializeObject(messages);
             await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
 
+            // Add the user to the relevant signalR group
+            await Groups.AddToGroupAsync(Context.ConnectionId, ChatHubHelper.GroupFor(channelInfoPacket));
+            // Notify group of new member
+            var userCookie = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket).UserCookie;
+            var currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+            var notification = currentUser.Name + " has joined!";
+
+            await Clients.Group(ChatHubHelper.GroupFor(channelInfoPacket)).SendAsync
+                ("Notification", notification);
         }
 
         // Attempt to create a new channel from the given data
