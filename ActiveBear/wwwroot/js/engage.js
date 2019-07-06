@@ -13,7 +13,7 @@ var currentUser = document.getElementById("currentUser"); // TODO: dont use DOM 
 var messageInput = document.getElementById("messageInput");
 var passwordInput = document.getElementById("passwordInput");
 var messageContainer = document.getElementById("container");
-var body = document.getElementById("body");
+var navBar = document.getElementById("navbar");
 
 // Send actions
 
@@ -56,9 +56,9 @@ connection.start().then(function(){
 	var width = Math.round(screen.width * 0.9) + "px";
 
 	messageContainer.style.height = height;
-	body.style.width = width;
 	messageContainer.style.width = width;
 	messageInput.style.width = width;
+	navBar.style.width = screen.width + "px";
 
 	ChatHub.RequestAllMessages();
 
