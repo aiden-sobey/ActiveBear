@@ -13,7 +13,9 @@ var currentUser = document.getElementById("currentUser"); // TODO: dont use DOM 
 var messageInput = document.getElementById("messageInput");
 var passwordInput = document.getElementById("passwordInput");
 var messageContainer = document.getElementById("container");
+var body = document.getElementById("body");
 var navBar = document.getElementById("navbar");
+var bodyContent = document.getElementsByClassName('body-content')[0];
 
 // Send actions
 
@@ -47,9 +49,6 @@ connection.on(Notification, function(message) {
 // Connection
 
 connection.start().then(function(){
-	messager = new Messager(messageInput, passwordInput, messageContainer);
-	ChatHub.GetCurrentUser();
-
 	// Dynamically set chat height
 	var navHeight = $("#navbar").height();
 	var height = window.innerHeight - navHeight - 50 + "px";
@@ -60,7 +59,13 @@ connection.start().then(function(){
 	messageInput.style.width = width;
 	navBar.style.width = screen.width + "px";
 
+	bodyContent.style.height = (screen.height - navHeight) + "px";
+	messageContainer.style.height = (screen.height - 100) + "px"
+
+	messager = new Messager(messageInput, passwordInput, messageContainer);
+	ChatHub.GetCurrentUser();
 	ChatHub.RequestAllMessages();
+	document.documentElement.scrollTop = document.documentElement.scrollHeight;
 
 }).catch(function (err) {
 	return console.error(err.toString());

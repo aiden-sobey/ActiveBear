@@ -18,7 +18,7 @@
             <link rel="stylesheet" href="~/css/Channel.css" />
         </environment>
     </head>
-    <body>
+    <body id="body">
         <nav class="navbar navbar-inverse navbar-fixed-top" id="navbar">
             <div class="container">
                 <div class="navbar-header">
@@ -37,8 +37,6 @@
                 </div>
             </div>
         </nav>
-
-        <partial name="_CookieConsentPartial" />
 
         <div class="container body-content">
             @RenderBody()
