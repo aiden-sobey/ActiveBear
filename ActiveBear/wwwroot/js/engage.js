@@ -7,6 +7,7 @@ var CurrentUser = "CurrentUser";
 var Notification = "Notification";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+var messager;
 
 var currentUser = document.getElementById("currentUser"); // TODO: dont use DOM for this
 var messageInput = document.getElementById("messageInput");
@@ -25,7 +26,7 @@ messageInput.addEventListener("keydown", function(event) {
 
 connection.on(ReceiveMessage, function (messageBlob) {
 	var message = JSON.parse(messageBlob);
-	Messager.CreateMessageBubble(message);
+	messager.CreateMessageBubble(message);
 });
 
 connection.on(CurrentUser, function (user) {
@@ -35,18 +36,18 @@ connection.on(CurrentUser, function (user) {
 connection.on(ReceiveAllMessages, function (messageList) {
 	var messages = JSON.parse(messageList);
 	messages.forEach(function(message) {
-		Messager.CreateMessageBubble(message);
+		messager.CreateMessageBubble(message);
 	});
 });
 
 connection.on(Notification, function(message) {
-	Messager.Notification(message);
+	messager.Notification(message);
 });
 
 // Connection
 
 connection.start().then(function(){
-	Messager.AuthenticateChannel();
+	messager = new Messager(messageInput, passwordInput, messageContainer);
 	ChatHub.GetCurrentUser();
 
 	// Dynamically set chat height
