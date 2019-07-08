@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ActiveBear.Models
 {
@@ -7,8 +8,13 @@ namespace ActiveBear.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid User { get; set; }
+
+        [ForeignKey("UserForeignKey")]
+        public string User { get; set; }
+
+        [ForeignKey("ChannelForeignKey")]
         public Guid Channel { get; set; }
+
         [Required]
         public string HashedKey { get; set; }
 

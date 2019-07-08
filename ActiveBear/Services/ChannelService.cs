@@ -16,7 +16,7 @@ namespace ActiveBear.Services
                 return null;
 
             var context = DbService.NewDbContext();
-            var channel = new Channel(context)
+            var channel = new Channel
             {
                 Title = title,
                 KeyHash = key,

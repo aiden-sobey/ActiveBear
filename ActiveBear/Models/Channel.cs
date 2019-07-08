@@ -1,31 +1,33 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ActiveBear.Models
 {
     public class Channel
     {
-        // General details
         [Key]
         public Guid Id { get; set; }
+
+        [Required]
         public string Title { get; set; }
-        public string Status { get; set; }
 
-        // Encryption properties
-        public string KeyHash { get; set; } // The key, hashed
+        [Required]
+        public string KeyHash { get; set; }
 
-        // Audit properties
         [DataType(DataType.DateTime)]
         public DateTime CreateDate { get; set; }
-        public string CreateUser { get; set; }
-        private ActiveBearContext _context;
 
-        public Channel(ActiveBearContext context)
+        [ForeignKey("UserForeignKey")]
+        public string CreateUser { get; set; }
+
+        public string Status { get; set; }
+
+        public Channel()
         {
             Id = Guid.NewGuid();
             Status = Constants.Channel.Status.Active;
             CreateDate = DateTime.Now;
-            _context = context;
         }
     }
 }
