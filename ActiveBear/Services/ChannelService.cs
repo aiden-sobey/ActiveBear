@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using ActiveBear.Hubs;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace ActiveBear.Services
 {
@@ -47,17 +48,30 @@ namespace ActiveBear.Services
 
         public static async Task<List<Message>> MessagesFor(Channel channel)
         {
+            if (channel == null) return new List<Message>();
             var context = DbService.NewDbContext();
             return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
         }
 
         public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
         {
-            var context = DbService.NewDbContext();
-            var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
+            ChannelInfoPacket decodedPacket;
+            Guid channelId, userCookie;
+            try
+            {
+                decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
+                channelId = Guid.Parse(decodedPacket.Channel);
+                userCookie = Guid.Parse(decodedPacket.UserCookie);
+            }
+            catch
+            {
+                // Packet passed in was invalid
+                return new List<Message>();
+            }
 
-            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedPacket.Channel);
-            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedPacket.UserCookie);
+            var context = DbService.NewDbContext();
+            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id == channelId);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId == userCookie);
             var auth = await ChannelAuthService.UserIsAuthed(channel, user);
             if (auth)
                 return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();

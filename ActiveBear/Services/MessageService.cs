@@ -11,17 +11,17 @@ namespace ActiveBear.Services
 {
     public static class MessageService
     {
-        public static async Task<Message> NewMessage(string senderName, Guid channelId, string content)
+        public static async Task<Message> NewMessage(User sender, Channel channel, string content)
         {
-            if (string.IsNullOrEmpty(senderName) || channelId == Guid.Empty || string.IsNullOrEmpty(content))
+            if (sender == null || channel.Id == Guid.Empty || string.IsNullOrEmpty(content))
                 return null;
 
             var context = DbService.NewDbContext();
 
             var newMessage = new Message
             {
-                Sender = senderName,
-                Channel = channelId,
+                Sender = sender.Name,
+                Channel = channel.Id,
                 EncryptedContents = content
             };
 
@@ -42,7 +42,7 @@ namespace ActiveBear.Services
             if (!auth || channel == null || user == null)
                 return new Message();
 
-            var message = await NewMessage(user.Name, channel.Id, decodedMessage.Message);
+            var message = await NewMessage(user, channel, decodedMessage.Message);
             return message;
         }
 
