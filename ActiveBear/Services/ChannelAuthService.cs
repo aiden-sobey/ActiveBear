@@ -9,6 +9,7 @@ namespace ActiveBear.Services
         public static async Task CreateAuth(Channel channel, User user)
         {
             if (channel == null || user == null) return;
+            if (await UserIsAuthed(channel, user)) return;
 
             var context = DbService.NewDbContext();
 

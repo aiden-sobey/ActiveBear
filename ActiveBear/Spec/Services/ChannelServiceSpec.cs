@@ -19,7 +19,7 @@ namespace ActiveBear.Spec.Services
         [SetUp]
         protected async Task SetUp()
         {
-            user = await UserService.CreateUser("Tester", "password", "empty");
+            user = await UserService.CreateUser(Lorem, Lorem, Lorem);
         }
 
         // Create Channel
