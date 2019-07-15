@@ -53,19 +53,5 @@ namespace ActiveBear.Services
 
             return messages;
         }
-
-        public static async Task<Dictionary<Message, User>> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)
-        {
-            var link = new Dictionary<Message, User>();
-
-            foreach (var message in messages)
-            {
-                var user = await context.Users.FirstOrDefaultAsync(u => u.Name == message.Sender);
-                if (user != null)
-                    link.Add(message, user);
-            }
-
-            return link;
-        }
     }
 }

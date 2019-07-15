@@ -9,24 +9,18 @@ namespace ActiveBear.Services
     {
         public static async Task<User> CreateUser(string name, string password, string description)
         {
-            User newUser = null;
             var context = DbService.NewDbContext();
 
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
-                return null;
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password)) return null;
+            if (await ExistingUser(name) != null) return null;
 
-            var existingUser = await ExistingUser(name);
-            if (existingUser != null)
-                return null;
-
-            newUser = new User
+            var newUser = new User
             {
                 Name = name,
                 Description = description,
                 Password = EncryptionService.Sha256(password)
             };
-            if (newUser.CookieId == Guid.Empty)
-                return newUser;
+            if (newUser.CookieId == Guid.Empty) return newUser;
 
             context.Add(newUser);
             await context.SaveChangesAsync();
