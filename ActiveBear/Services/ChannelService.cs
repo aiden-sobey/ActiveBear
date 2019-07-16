@@ -55,11 +55,11 @@ namespace ActiveBear.Services
 
         public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
         {
-            ChannelInfoPacket decodedPacket;
             Guid channelId, userCookie;
+
             try
             {
-                decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
+                var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
                 channelId = Guid.Parse(decodedPacket.Channel);
                 userCookie = Guid.Parse(decodedPacket.UserCookie);
             }

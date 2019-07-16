@@ -13,12 +13,19 @@ namespace ActiveBear.Hubs
         public async Task CurrentUser(string cookiePacket)
         {
             if (string.IsNullOrEmpty(cookiePacket)) return;
-            var userCookie = JsonConvert.DeserializeObject<CookiePacket>(cookiePacket).UserCookie;
-            var currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
-            if (currentUser == null) return;
 
-            // We just want to send the name, not the whole user object
-            await Clients.Caller.SendAsync("CurrentUser", currentUser.Name);
+            try
+            {
+                // Handling direct user input here, so be very cautious with it
+                var userCookie = JsonConvert.DeserializeObject<CookiePacket>(cookiePacket).UserCookie;
+                var currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+                if (currentUser != null)
+                    await Clients.Caller.SendAsync("CurrentUser", currentUser.Name);
+            }
+            catch
+            {
+                return; // Invalid userCookie within the cookiePacket
+            }
         }
 
         // Client has sent us a message
@@ -36,19 +43,30 @@ namespace ActiveBear.Hubs
         // Client has requested all messages for this channel
         public async Task GetChannelMessages(string channelInfoPacket)
         {
+            User currentUser;
+
+            try
+            {
+                var userCookie = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket).UserCookie;
+                currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+            }
+            catch
+            {
+                return; // Error parsing the packet
+            }
+
+            if (currentUser == null) return;
+
+            // Send channel messages to the validated user
             var messages = await ChannelService.MessagesFor(channelInfoPacket);
             var channelMessages = JsonConvert.SerializeObject(messages);
             await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
 
             // Add the user to the relevant signalR group
             await Groups.AddToGroupAsync(Context.ConnectionId, ChatHubHelper.GroupFor(channelInfoPacket));
-            // Notify group of new member
-            var userCookie = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket).UserCookie;
-            var currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+            // Notify group they joined
             var notification = currentUser.Name + " has joined!";
-
-            await Clients.Group(ChatHubHelper.GroupFor(channelInfoPacket)).SendAsync
-                ("Notification", notification);
+            await Clients.Group(ChatHubHelper.GroupFor(channelInfoPacket)).SendAsync("Notification", notification);
         }
 
         // Attempt to create a new channel from the given data
