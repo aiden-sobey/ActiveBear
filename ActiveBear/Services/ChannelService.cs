@@ -33,17 +33,18 @@ namespace ActiveBear.Services
         public static async Task<Channel> CreateChannel(string channelCreationPacket)
         {
             ChannelCreationPacket packet;
+            User user;
+
             try
             {
                 packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
+                user = await UserService.ExistingUser(Guid.Parse(packet.UserCookie));
+                return await CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
             }
-            catch // Deserialization error
+            catch
             {
-                return null;
+                return null;    // Deserialization error
             }
-
-            var user = await CookieService.CurrentUser(packet.UserCookie);
-            return await CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
         }
 
         public static async Task<List<Message>> MessagesFor(Channel channel)
@@ -51,6 +52,13 @@ namespace ActiveBear.Services
             if (channel == null) return new List<Message>();
             var context = DbService.NewDbContext();
             return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
+        }
+
+        public static async Task<List<Message>> MessagesFor(Guid channelId)
+        {
+            if (channelId == Guid.Empty) return new List<Message>();
+
+            return await MessagesFor(await GetChannel(channelId));
         }
 
         public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
@@ -77,6 +85,13 @@ namespace ActiveBear.Services
                 return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
 
             return new List<Message>();
+        }
+
+        // TODO: write test coverage for this
+        public static async Task<Channel> GetChannel(Guid channelId)
+        {
+            var context = DbService.NewDbContext();
+            return await context.Channels.FirstOrDefaultAsync(c => c.Id == channelId);
         }
     }
 }

@@ -20,35 +20,17 @@ namespace ActiveBear.Services
 
         public static async Task<User> CurrentUser(HttpRequest request)
         {
-            var context = DbService.NewDbContext();
-
             if (!request.Cookies.ContainsKey(Constants.User.CookieKey))
                 return null;
 
             try
             {
                 var requestCookie = Guid.Parse(request.Cookies[Constants.User.CookieKey]);
-                return await context.Users.FirstOrDefaultAsync(u => u.CookieId == requestCookie);
+                return await UserService.ExistingUser(requestCookie);
             }
             catch
             {
-                // Invalid cookie in the browser
-                return null;
-            }
-        }
-
-        public static async Task<User> CurrentUser(string userCookie)
-        {
-            var context = DbService.NewDbContext();
-
-            try
-            {
-                var userGuid = Guid.Parse(userCookie);
-                return await context.Users.FirstOrDefaultAsync(u => u.CookieId == userGuid);
-            }
-            catch
-            {
-                return null;
+                return null;    // Invalid cookie in the browser
             }
         }
 

@@ -33,25 +33,27 @@ namespace ActiveBear.Services
 
         public static async Task<Message> NewMessageFromPacket(string messagePacket)
         {
-            var context = DbService.NewDbContext();
-            var decodedMessage = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
+            Guid channelId, userCookie;
+            MessagePacket packet;
 
-            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedMessage.Channel);
-            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedMessage.UserCookie);
+            try
+            {
+                packet = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
+                channelId = Guid.Parse(packet.Channel);
+                userCookie = Guid.Parse(packet.UserCookie);
+            }
+            catch
+            {
+                return null;
+            }
+
+            var channel = await ChannelService.GetChannel(channelId);
+            var user = await UserService.ExistingUser(userCookie);
             var auth = await ChannelAuthService.UserIsAuthed(channel, user);
             if (!auth || channel == null || user == null)
-                return new Message();
+                return null;
 
-            var message = await NewMessage(user, channel, decodedMessage.Message);
-            return message;
-        }
-
-        public static async Task<List<Message>> ChannelMessages(Channel channel)
-        {
-            var context = DbService.NewDbContext();
-            var messages = await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
-
-            return messages;
+            return await NewMessage(user, channel, packet.Message);
         }
     }
 }

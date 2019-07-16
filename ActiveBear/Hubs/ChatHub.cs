@@ -33,8 +33,10 @@ namespace ActiveBear.Hubs
         {
             if (string.IsNullOrEmpty(messagePacket)) return;
 
-            // Create a message from the serialized packet
             var message = await MessageService.NewMessageFromPacket(messagePacket);
+
+            if (message == null) return;    // If our message creation failed
+
             var messageBlob = JsonConvert.SerializeObject(message);
             await Clients.Group(ChatHubHelper.GroupFor(messagePacket)).SendAsync
                 ("ReceiveMessage", messageBlob);
