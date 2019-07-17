@@ -1,25 +1,18 @@
 ﻿@model Message
 
-<div class="body" id="body">
-    <div id="container" class="message_container">
+<div id="container" class="message_container">
+</div>
+
+<div id="messaging_footer">
+    <div class="message_holder">
+        <input type="text" id="messageInput" hidden="true" />
+    </div>
+    <div class="password_holder">
+        <input type="text" id="passwordInput" hidden="true" />
     </div>
 
-    <div id="messaging_footer">
-        <div class="message_holder">
-            <input type="text" id="messageInput" hidden="true" />
-        </div>
-        <div class="password_holder">
-            <input type="text" id="passwordInput" hidden="true" />
-        </div>
-
-        <div hidden="true" id="currentUser"></div>
-    </div>
+    <div hidden="true" id="currentUser"></div>
 </div>
 
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-<script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
-<script src="~/js/encryption.js"></script>
-<script src="~/js/messager.js"></script>
-<script src="~/js/chatHub.js"></script>
-<script src="~/js/sha256.js"></script>
 <script src="~/js/engage.js"></script>

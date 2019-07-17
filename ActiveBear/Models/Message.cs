@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ActiveBear.Models
 {
@@ -7,12 +8,16 @@ namespace ActiveBear.Models
     {
         [Key]
         public Guid Id { get; set; }
-        [Required]
+
+        [Required][ForeignKey("UserForeignKey")]
         public string Sender { get; set; }
-        [Required]
+
+        [Required][ForeignKey("ChannelForeignKey")]
         public Guid Channel { get; set; }
+
         [Required]
         public string EncryptedContents { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime SendDate { get; set; }
 

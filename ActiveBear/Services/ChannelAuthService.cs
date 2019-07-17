@@ -12,7 +12,7 @@ namespace ActiveBear.Services
 
             var channelAuth = new ChannelAuth
             {
-                User = user.CookieId,
+                User = user.Name,
                 Channel = channel.Id,
                 HashedKey = channel.KeyHash
             };
@@ -28,7 +28,7 @@ namespace ActiveBear.Services
 
             var context = DbService.NewDbContext();
             var auth = await context.ChannelAuths.FirstOrDefaultAsync(au => au.Channel == channel.Id &&
-                                                                            au.User == user.CookieId);
+                                                                            au.User == user.Name);
 
             return auth != null;
         }

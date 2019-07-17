@@ -19,8 +19,8 @@ body {
 .body-content {
     background-color: #9fbff2;
     margin: 0px;
+    height: 100%;
     width: 100%;
-    min-height: 100%;
     margin-bottom: 0px;
     padding-bottom: 0px;
     position: absolute;

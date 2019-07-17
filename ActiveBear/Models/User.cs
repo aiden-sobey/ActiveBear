@@ -8,19 +8,17 @@ namespace ActiveBear.Models
     {
         [Key]
         public string Name { get; set; }
-        public string Description { get; set; }
-        [Required, DataType(DataType.Password), MinLength(8)]
+
+        [Required, DataType(DataType.Password), MinLength(12)]
         public string Password { get; set; }
+
         public Guid CookieId { get; set; }
+
+        public string Description { get; set; }
 
         public User()
         {
             CookieId = Guid.NewGuid();
-        }
-
-        public List<ChannelAuth> GetAuthorisedChannels()
-        {
-            return new List<ChannelAuth>();
         }
     }
 }
