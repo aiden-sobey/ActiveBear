@@ -61,32 +61,6 @@ namespace ActiveBear.Services
             return await MessagesFor(await GetChannel(channelId));
         }
 
-        public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
-        {
-            Guid channelId, userCookie;
-
-            try
-            {
-                var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
-                channelId = Guid.Parse(decodedPacket.Channel);
-                userCookie = Guid.Parse(decodedPacket.UserCookie);
-            }
-            catch
-            {
-                // Packet passed in was invalid
-                return new List<Message>();
-            }
-
-            var context = DbService.NewDbContext();
-            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id == channelId);
-            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId == userCookie);
-            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
-            if (auth)
-                return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
-
-            return new List<Message>();
-        }
-
         // TODO: write test coverage for this
         public static async Task<Channel> GetChannel(Guid channelId)
         {

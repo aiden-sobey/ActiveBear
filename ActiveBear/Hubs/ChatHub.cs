@@ -45,12 +45,16 @@ namespace ActiveBear.Hubs
         // Client has requested all messages for this channel
         public async Task GetChannelMessages(string channelInfoPacket)
         {
+            ChannelInfoPacket packet;
             User currentUser;
+            Channel channel;
 
             try
             {
-                var userCookie = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket).UserCookie;
-                currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+
+                packet = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
+                currentUser = await UserService.ExistingUser(Guid.Parse(packet.UserCookie));
+                channel = await ChannelService.GetChannel(Guid.Parse(packet.Channel));
             }
             catch
             {
@@ -60,7 +64,7 @@ namespace ActiveBear.Hubs
             if (currentUser == null) return;
 
             // Send channel messages to the validated user
-            var messages = await ChannelService.MessagesFor(channelInfoPacket);
+            var messages = await ChannelService.MessagesFor(channel);
             var channelMessages = JsonConvert.SerializeObject(messages);
             await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
 

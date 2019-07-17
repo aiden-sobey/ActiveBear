@@ -107,11 +107,8 @@ namespace ActiveBear.Spec.Services
         public async Task MessagesForNullChannelIsEmpty()
         {
             var objectMessages = await ChannelService.MessagesFor(channel: null);
-            var packetMessages = await ChannelService.MessagesFor(channelInfoPacket: null);
             Assert.IsEmpty(objectMessages);
-            Assert.IsEmpty(packetMessages);
             Assert.IsNotNull(objectMessages);
-            Assert.IsNotNull(packetMessages);
         }
         
         [Test]
@@ -132,60 +129,6 @@ namespace ActiveBear.Spec.Services
 
             Assert.IsNotNull(messages);
             Assert.AreEqual(MessageCount, messages.Count);
-        }
-
-        [Test]
-        public async Task MessagesForValidPacketSucceeds()
-        {
-            var channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
-            Assert.IsNotNull(channel);
-            await ChannelAuthService.CreateAuth(channel, user);
-            Assert.IsTrue(await ChannelAuthService.UserIsAuthed(channel, user));
-            await PopulateWithMessages(channel);
-
-            var packet = NewChannelInfoPacket(channel);
-            var messages = await ChannelService.MessagesFor(packet);
-
-            Assert.AreEqual(MessageCount, messages.Count);
-        }
-
-        [Test]
-        public async Task MessagesForInvalidPacketIsEmpty()
-        {
-            var channelPacket = "{Channel:'', CookieId:" + user.CookieId + "}";
-            Assert.IsEmpty(await ChannelService.MessagesFor(channelPacket));
-            await ChannelService.CreateChannel(null);
-        }
-
-        [Test]
-        public async Task MessagesForUnAuthedUserIsEmpty()
-        {
-            var channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
-            Assert.IsNotNull(channel);
-            await PopulateWithMessages(channel);
-
-            var packet = NewChannelInfoPacket(channel);
-            var messages = await ChannelService.MessagesFor(packet);
-
-            Assert.IsEmpty(messages);
-        }
-
-        [Test]
-        public async Task MessagesForInvalidUserIsEmpty()
-        {
-            var channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
-            Assert.IsNotNull(channel);
-            await PopulateWithMessages(channel);
-
-            var packetBlob = new ChannelInfoPacket
-            {
-                UserCookie = Guid.NewGuid().ToString(),
-                Channel = channel.Id.ToString()
-            };
-            var packet = JsonConvert.SerializeObject(packetBlob);
-
-            var messages = await ChannelService.MessagesFor(packet);
-            Assert.IsEmpty(messages);
         }
 
         // Helpers
