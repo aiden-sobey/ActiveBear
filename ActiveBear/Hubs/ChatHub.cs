@@ -51,7 +51,6 @@ namespace ActiveBear.Hubs
 
             try
             {
-
                 packet = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
                 currentUser = await UserService.ExistingUser(Guid.Parse(packet.UserCookie));
                 channel = await ChannelService.GetChannel(Guid.Parse(packet.Channel));
@@ -78,10 +77,19 @@ namespace ActiveBear.Hubs
         // Attempt to create a new channel from the given data
         public async Task CreateChannel(string channelCreationPacket)
         {
-            Channel channel = await ChannelService.CreateChannel(channelCreationPacket);
+            try
+            {
+                var packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
+                var user = await UserService.ExistingUser(packet.UserCookie);
+                Channel channel = await ChannelService.CreateChannel(
+                    packet.ChannelTitle, packet.ChannelKey, user);
 
-            if (channel != null)
-                await Clients.Caller.SendAsync("ChannelCreated", channel.Id);
+                if (channel != null) await Clients.Caller.SendAsync("ChannelCreated", channel.Id);
+            }
+            catch
+            {
+                return;
+            }
         }
     }
 }

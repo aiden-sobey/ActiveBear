@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using ActiveBear.Hubs;
+﻿using System.Threading.Tasks;
 using ActiveBear.Models;
 using ActiveBear.Services;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
@@ -36,7 +33,6 @@ namespace ActiveBear.Spec.Services
         [Test]
         public async Task CreateChannelFromValidDataPasses()
         {
-
             var channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
             Assert.AreEqual(user.Name, channel.CreateUser);
             Assert.AreEqual(Lorem, channel.Title);
@@ -55,50 +51,11 @@ namespace ActiveBear.Spec.Services
                 Title = Lorem,
                 KeyHash = Lorem
             };
-
+            
             // Make this an illegitimate channel then try to save it
             copyChannel.Id = channel.Id;
             context.Add(copyChannel);
-            _ = await context.SaveChangesAsync();
-        }
-
-        [Test]
-        public async Task CreateChannelFromIncompletePacketFails()
-        {
-            string channelPacket;
-
-            channelPacket = NewChannelCreationPacket(Lorem, string.Empty);
-            Assert.IsNull(await ChannelService.CreateChannel(channelPacket));
-
-            channelPacket = NewChannelCreationPacket(string.Empty, Lorem);
-            Assert.IsNull(await ChannelService.CreateChannel(channelPacket));
-
-            // TODO: fix this
-            //channelPacket = NewChannelCreationPacket(Lorem, Lorem, Guid.Empty); // Todo this wont get properly tested
-            Assert.IsNull(await ChannelService.CreateChannel(channelPacket));
-
-            channelPacket = NewChannelCreationPacket(Lorem, null);
-            Assert.IsNull(await ChannelService.CreateChannel(channelPacket));
-        }
-
-        [Test]
-        public async Task CreateChannelFromInvalidPacketFails()
-        {
-            var channelPacket = "{Title:'Test', Key:'Test', CookieId:" + user.CookieId + "}";
-            Assert.IsNull(await ChannelService.CreateChannel(channelPacket));
-
-            Assert.IsNull(await ChannelService.CreateChannel(string.Empty));
-            Assert.IsNull(await ChannelService.CreateChannel(JsonConvert.SerializeObject(user.CookieId)));
-        }
-
-        [Test]
-        public async Task CreateChannelFromValidPacketSucceeds()
-        {
-            var channelPacket = NewChannelCreationPacket(Lorem, Lorem);
-            var channel = await ChannelService.CreateChannel(channelPacket);
-            Assert.AreEqual(channel.CreateUser, user.Name);
-            Assert.AreEqual(channel.Title, Lorem);
-            Assert.AreEqual(channel.KeyHash, EncryptionService.Sha256(Lorem));
+            await context.SaveChangesAsync();
         }
 
         // MessagesFor
@@ -132,29 +89,6 @@ namespace ActiveBear.Spec.Services
         }
 
         // Helpers
-
-        private string NewChannelCreationPacket(string title=Lorem, string key=Lorem)
-        {
-            var channelObject = new ChannelCreationPacket
-            {
-                UserCookie = user.CookieId.ToString(),
-                ChannelTitle = title,
-                ChannelKey = key
-            };
-
-            return JsonConvert.SerializeObject(channelObject);
-        }
-
-        private string NewChannelInfoPacket(Channel channel)
-        {
-            var packet = new ChannelInfoPacket
-            {
-                UserCookie = user.CookieId.ToString(),
-                Channel = channel.Id.ToString()
-            };
-
-            return JsonConvert.SerializeObject(packet);
-        }
 
         private async Task PopulateWithMessages(Channel channel)
         {

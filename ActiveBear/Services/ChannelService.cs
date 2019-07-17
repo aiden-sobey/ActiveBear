@@ -1,8 +1,6 @@
 ﻿using ActiveBear.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
-using ActiveBear.Hubs;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,26 +23,9 @@ namespace ActiveBear.Services
             };
 
             context.Add(channel);
-            _ = await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return channel;
-        }
-
-        public static async Task<Channel> CreateChannel(string channelCreationPacket)
-        {
-            ChannelCreationPacket packet;
-            User user;
-
-            try
-            {
-                packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
-                user = await UserService.ExistingUser(Guid.Parse(packet.UserCookie));
-                return await CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
-            }
-            catch
-            {
-                return null;    // Deserialization error
-            }
         }
 
         public static async Task<List<Message>> MessagesFor(Channel channel)
