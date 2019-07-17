@@ -11,17 +11,17 @@ namespace ActiveBear.Services
 {
     public static class MessageService
     {
-        public static async Task<Message> NewMessage(string senderName, Guid channelId, string content)
+        public static async Task<Message> NewMessage(User sender, Channel channel, string content)
         {
-            if (string.IsNullOrEmpty(senderName) || channelId == Guid.Empty || string.IsNullOrEmpty(content))
+            if (sender == null || channel.Id == Guid.Empty || string.IsNullOrEmpty(content))
                 return null;
 
             var context = DbService.NewDbContext();
 
             var newMessage = new Message
             {
-                Sender = senderName,
-                Channel = channelId,
+                Sender = sender.Name,
+                Channel = channel.Id,
                 EncryptedContents = content
             };
 
@@ -33,39 +33,27 @@ namespace ActiveBear.Services
 
         public static async Task<Message> NewMessageFromPacket(string messagePacket)
         {
-            var context = DbService.NewDbContext();
-            var decodedMessage = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
+            Guid channelId, userCookie;
+            MessagePacket packet;
 
-            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedMessage.Channel);
-            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedMessage.UserCookie);
-            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
-            if (!auth || channel == null || user == null)
-                return new Message();
-
-            var message = await NewMessage(user.Name, channel.Id, decodedMessage.Message);
-            return message;
-        }
-
-        public static async Task<List<Message>> ChannelMessages(Channel channel)
-        {
-            var context = DbService.NewDbContext();
-            var messages = await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
-
-            return messages;
-        }
-
-        public static async Task<Dictionary<Message, User>> LinkMessagesToUsers(List<Message> messages, ActiveBearContext context)
-        {
-            var link = new Dictionary<Message, User>();
-
-            foreach (var message in messages)
+            try
             {
-                var user = await context.Users.FirstOrDefaultAsync(u => u.Name == message.Sender);
-                if (user != null)
-                    link.Add(message, user);
+                packet = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
+                channelId = Guid.Parse(packet.Channel);
+                userCookie = Guid.Parse(packet.UserCookie);
+            }
+            catch
+            {
+                return null;
             }
 
-            return link;
+            var channel = await ChannelService.GetChannel(channelId);
+            var user = await UserService.ExistingUser(userCookie);
+            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
+            if (!auth || channel == null || user == null)
+                return null;
+
+            return await NewMessage(user, channel, packet.Message);
         }
     }
 }

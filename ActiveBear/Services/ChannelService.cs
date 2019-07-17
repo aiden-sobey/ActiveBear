@@ -1,10 +1,9 @@
 ﻿using ActiveBear.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
-using ActiveBear.Hubs;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace ActiveBear.Services
 {
@@ -24,45 +23,30 @@ namespace ActiveBear.Services
             };
 
             context.Add(channel);
-            _ = await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return channel;
         }
 
-        public static async Task<Channel> CreateChannel(string channelCreationPacket)
-        {
-            ChannelCreationPacket packet;
-            try
-            {
-                packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
-            }
-            catch // Deserialization error
-            {
-                return null;
-            }
-
-            var user = await CookieService.CurrentUser(packet.UserCookie);
-            return await CreateChannel(packet.ChannelTitle, packet.ChannelKey, user);
-        }
-
         public static async Task<List<Message>> MessagesFor(Channel channel)
         {
+            if (channel == null) return new List<Message>();
             var context = DbService.NewDbContext();
             return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
         }
 
-        public static async Task<List<Message>> MessagesFor(string channelInfoPacket)
+        public static async Task<List<Message>> MessagesFor(Guid channelId)
+        {
+            if (channelId == Guid.Empty) return new List<Message>();
+
+            return await MessagesFor(await GetChannel(channelId));
+        }
+
+        // TODO: write test coverage for this
+        public static async Task<Channel> GetChannel(Guid channelId)
         {
             var context = DbService.NewDbContext();
-            var decodedPacket = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
-
-            var channel = await context.Channels.FirstOrDefaultAsync(c => c.Id.ToString() == decodedPacket.Channel);
-            var user = await context.Users.FirstOrDefaultAsync(u => u.CookieId.ToString() == decodedPacket.UserCookie);
-            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
-            if (auth)
-                return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
-
-            return new List<Message>();
+            return await context.Channels.FirstOrDefaultAsync(c => c.Id == channelId);
         }
     }
 }
