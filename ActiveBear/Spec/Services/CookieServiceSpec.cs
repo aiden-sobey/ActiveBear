@@ -1,11 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using ActiveBear.Hubs;
-using ActiveBear.Models;
+﻿using System.Threading.Tasks;
 using ActiveBear.Services;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services

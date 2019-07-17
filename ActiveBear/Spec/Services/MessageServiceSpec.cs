@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using ActiveBear.Hubs;
 using ActiveBear.Models;
@@ -14,7 +13,7 @@ namespace ActiveBear.Spec.Services
     {
         private Channel channel;
         private User user;
-        private MessagePacket packet;
+        private string packet;
 
         private const string Lorem = "Lorem";
 
@@ -23,12 +22,12 @@ namespace ActiveBear.Spec.Services
         {
             user = await UserService.CreateUser(Lorem, Lorem, Lorem);
             channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
-            packet = new MessagePacket
+            packet = JsonConvert.SerializeObject(new MessagePacket
             {
                 UserCookie = user.CookieId.ToString(),
                 Channel = channel.Id.ToString(),
                 Message = Lorem
-            };
+            });
         }
 
         [Test]
@@ -36,6 +35,13 @@ namespace ActiveBear.Spec.Services
         {
             var message = await MessageService.NewMessage(user, channel, Lorem);
             Assert.Equals(Lorem, message.EncryptedContents);
+            await CheckMessageExists(message);
+        }
+
+        [Test]
+        public async Task NewMessageFromPacketCreatesMessage()
+        {
+            var message = await MessageService.NewMessageFromPacket(packet);
             await CheckMessageExists(message);
         }
 
@@ -53,11 +59,15 @@ namespace ActiveBear.Spec.Services
         }
 
         [Test]
-        public async Task NewMessageFromPacketCreatesMessage()
+        public async Task MessageFromForgedPacketIsNull()
         {
-            var jsonPacket = JsonConvert.SerializeObject(packet);
-            var message = await MessageService.NewMessageFromPacket(jsonPacket);
-            await CheckMessageExists(message);
+            var partialCookieId = user.CookieId.ToString().Substring(3);
+            var partialChannelId = channel.Id.ToString().Substring(7);
+            var partialPacket = packet.Substring(5);
+
+            Assert.IsNull(await NewMessageFromPacket(partialCookieId, channel.Id.ToString(), Lorem));
+            Assert.IsNull(await NewMessageFromPacket(user.CookieId.ToString(), partialChannelId, Lorem));
+            Assert.IsNull(await MessageService.NewMessageFromPacket(partialPacket));
         }
 
         // Helpers

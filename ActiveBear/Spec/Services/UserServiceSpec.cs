@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ActiveBear.Hubs;
 using ActiveBear.Models;
 using ActiveBear.Services;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
