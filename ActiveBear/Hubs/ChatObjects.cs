@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 // This file contains serializable class definitions for the objects
 // passed to-from the JavaScript.
@@ -10,10 +11,10 @@ namespace ActiveBear.Hubs
     class MessagePacket
     {
         [DataMember]
-        public string UserCookie = string.Empty;
+        public Guid UserCookie = Guid.Empty;
 
         [DataMember]
-        public string Channel = string.Empty;
+        public Guid Channel = Guid.Empty;
 
         [DataMember]
         public string Message = string.Empty;
@@ -25,10 +26,10 @@ namespace ActiveBear.Hubs
     class ChannelInfoPacket
     {
         [DataMember]
-        public string UserCookie = string.Empty;
+        public Guid UserCookie = Guid.Empty;
 
         [DataMember]
-        public string Channel = string.Empty;
+        public Guid Channel = Guid.Empty;
     }
 
     // ChannelCreationPacket holds the info necessary to create a channel. Note that fields can be empty.
@@ -36,7 +37,7 @@ namespace ActiveBear.Hubs
     class ChannelCreationPacket
     {
         [DataMember]
-        public string UserCookie = string.Empty;
+        public Guid UserCookie = Guid.Empty;
 
         [DataMember]
         public string ChannelTitle = string.Empty;
@@ -51,6 +52,6 @@ namespace ActiveBear.Hubs
     class CookiePacket
     {
         [DataMember]
-        public string UserCookie = string.Empty;
+        public Guid UserCookie = Guid.Empty;
     }
 }

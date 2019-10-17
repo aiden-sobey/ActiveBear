@@ -39,8 +39,8 @@ namespace ActiveBear.Services
             try
             {
                 packet = JsonConvert.DeserializeObject<MessagePacket>(messagePacket);
-                channelId = Guid.Parse(packet.Channel);
-                userCookie = Guid.Parse(packet.UserCookie);
+                channelId = packet.Channel;
+                userCookie = packet.UserCookie;
             }
             catch
             {

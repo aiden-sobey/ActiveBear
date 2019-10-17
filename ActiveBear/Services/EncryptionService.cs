@@ -5,7 +5,6 @@ namespace ActiveBear.Services
 {   
     public static class EncryptionService
     {
-        // TODO: async?
         public static string Sha256(string rawData)
         {
             using (SHA256 sha256Hash = SHA256.Create())

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ActiveBear.Hubs;
 using ActiveBear.Models;
@@ -24,8 +25,8 @@ namespace ActiveBear.Spec.Services
             channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
             packet = JsonConvert.SerializeObject(new MessagePacket
             {
-                UserCookie = user.CookieId.ToString(),
-                Channel = channel.Id.ToString(),
+                UserCookie = user.CookieId,
+                Channel = channel.Id,
                 Message = Lorem
             });
         }
@@ -52,27 +53,15 @@ namespace ActiveBear.Spec.Services
             Assert.IsNull(await MessageService.NewMessage(user, null, Lorem));
             Assert.IsNull(await MessageService.NewMessage(user, channel, ""));
 
-            Assert.IsNull(await NewMessageFromPacket(string.Empty, channel.Id.ToString(), Lorem));
-            Assert.IsNull(await NewMessageFromPacket(user.CookieId.ToString(), string.Empty, Lorem));
-            Assert.IsNull(await NewMessageFromPacket(string.Empty, channel.Id.ToString(), Lorem));
-            Assert.IsNull(await NewMessageFromPacket(user.CookieId.ToString(), channel.Id.ToString(), string.Empty));
-        }
-
-        [Test]
-        public async Task MessageFromForgedPacketIsNull()
-        {
-            var partialCookieId = user.CookieId.ToString().Substring(3);
-            var partialChannelId = channel.Id.ToString().Substring(7);
-            var partialPacket = packet.Substring(5);
-
-            Assert.IsNull(await NewMessageFromPacket(partialCookieId, channel.Id.ToString(), Lorem));
-            Assert.IsNull(await NewMessageFromPacket(user.CookieId.ToString(), partialChannelId, Lorem));
-            Assert.IsNull(await MessageService.NewMessageFromPacket(partialPacket));
+            Assert.IsNull(await NewMessageFromPacket(Guid.Empty, channel.Id, Lorem));
+            Assert.IsNull(await NewMessageFromPacket(user.CookieId, Guid.Empty, Lorem));
+            Assert.IsNull(await NewMessageFromPacket(Guid.Empty, channel.Id, Lorem));
+            Assert.IsNull(await NewMessageFromPacket(user.CookieId, channel.Id, string.Empty));
         }
 
         // Helpers
 
-        private async Task<Message> NewMessageFromPacket(string userCookie, string channelId, string message)
+        private async Task<Message> NewMessageFromPacket(Guid userCookie, Guid channelId, string message)
         {
             var messagePacket = new MessagePacket
             {

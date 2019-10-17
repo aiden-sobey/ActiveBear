@@ -8,7 +8,7 @@ namespace ActiveBear.Hubs
         public static string GroupFor(string encodedPacket)
         {
             var packet = JsonConvert.DeserializeObject<ChannelInfoPacket>(encodedPacket);
-            return packet.Channel;
+            return packet.Channel.ToString();
         }
     }
 }

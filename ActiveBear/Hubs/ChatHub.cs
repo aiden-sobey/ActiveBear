@@ -18,7 +18,7 @@ namespace ActiveBear.Hubs
             {
                 // Handling direct user input here, so be very cautious with it
                 var userCookie = JsonConvert.DeserializeObject<CookiePacket>(cookiePacket).UserCookie;
-                var currentUser = await UserService.ExistingUser(Guid.Parse(userCookie));
+                var currentUser = await UserService.ExistingUser(userCookie);
                 if (currentUser != null)
                     await Clients.Caller.SendAsync("CurrentUser", currentUser.Name);
             }
@@ -52,8 +52,8 @@ namespace ActiveBear.Hubs
             try
             {
                 packet = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
-                currentUser = await UserService.ExistingUser(Guid.Parse(packet.UserCookie));
-                channel = await ChannelService.GetChannel(Guid.Parse(packet.Channel));
+                currentUser = await UserService.ExistingUser(packet.UserCookie);
+                channel = await ChannelService.GetChannel(packet.Channel);
             }
             catch
             {
@@ -85,6 +85,7 @@ namespace ActiveBear.Hubs
                     packet.ChannelTitle, packet.ChannelKey, user);
 
                 if (channel != null) await Clients.Caller.SendAsync("ChannelCreated", channel.Id);
+                // TODO - return error if channel or user is null
             }
             catch
             {
