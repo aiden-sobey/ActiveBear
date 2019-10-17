@@ -80,11 +80,12 @@ namespace ActiveBear.Hubs
             try
             {
                 var packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
-                var user = await UserService.ExistingUser(packet.UserCookie);
+                var user = await UserService.ExistingUser(Guid.Parse(packet.UserCookie));
                 Channel channel = await ChannelService.CreateChannel(
                     packet.ChannelTitle, packet.ChannelKey, user);
 
                 if (channel != null) await Clients.Caller.SendAsync("ChannelCreated", channel.Id);
+                // TODO - return error if channel or user is null
             }
             catch
             {
