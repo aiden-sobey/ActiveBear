@@ -77,7 +77,8 @@ namespace ActiveBear.Spec.Services
         private async Task CheckMessageExists(Message message)
         {
             Assert.IsNotNull(message);
-            var channelMessages = await ChannelService.MessagesFor(message.Channel);
+            var messageChannel = await ChannelService.GetChannel(message.Channel);
+            var channelMessages = await ChannelService.MessagesFor(messageChannel);
             Assert.IsNotEmpty(channelMessages);
             var savedMessage = channelMessages.FirstOrDefault(m => m.Id == message.Id);
             Assert.IsNotNull(savedMessage);

@@ -1,6 +1,8 @@
 ﻿using ActiveBear.Models;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ActiveBear.Services
 {
@@ -34,6 +36,16 @@ namespace ActiveBear.Services
                                                                             au.User == user.Name);
 
             return auth != null;
+        }
+
+        // TODO: test
+        public static async Task<List<ChannelAuth>> ChannelAuthsFor(Channel channel)
+        {
+            if (channel == null) return new List<ChannelAuth>();
+
+            var context = DbService.NewDbContext();
+            var auths = context.ChannelAuths.Where(c => c.Channel == channel.Id);
+            return await auths.ToListAsync();
         }
     }
 }
