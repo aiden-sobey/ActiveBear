@@ -28,16 +28,23 @@ namespace ActiveBear.Services
             return newUser;
         }
 
-        public static async Task<User> ExistingUser(string name, string password = "")
+        public static async Task<User> ExistingUser(string name, string password)
         {
-            var context = DbService.NewDbContext();
-            if (string.IsNullOrEmpty(password))
-                return await context.Users.FirstOrDefaultAsync(u => u.Name == name);
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+                return null;
 
-            // Match on password too
+            var context = DbService.NewDbContext();
             var hashedPassword = EncryptionService.Sha256(password);
             return await context.Users.FirstOrDefaultAsync(u => u.Name == name &&
                                                                 u.Password == hashedPassword);
+        }
+
+        public static async Task<User> ExistingUser(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+
+            var context = DbService.NewDbContext();
+            return await context.Users.FirstOrDefaultAsync(u => u.Name == name);
         }
 
         public static async Task<User> ExistingUser(Guid cookieId)

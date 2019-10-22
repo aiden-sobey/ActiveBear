@@ -35,6 +35,13 @@ namespace ActiveBear.Controllers
         public async Task<IActionResult> Login(User user)
         {
             CookieService.DeleteUserCookie(Response);
+
+            if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password))
+            {
+                ViewBag.Error = "All fields are mandatory";
+                return View();
+            }
+
             var existingUser = await UserService.ExistingUser(user.Name, user.Password);
 
             if (existingUser == null)
