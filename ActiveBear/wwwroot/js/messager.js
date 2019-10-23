@@ -45,7 +45,7 @@ class Messager {
 
 		if (senderIsCurrentUser) {
 			messageBubble.style.textAlign = "right";
-            messageBubble.style.backgroundColor = "#af2dcc";
+            messageBubble.style.backgroundColor = "#3000a8";
         }
 		if (sameSenderAsLastMessage) {
 			messageBubble.style.marginTop = "-13px";
