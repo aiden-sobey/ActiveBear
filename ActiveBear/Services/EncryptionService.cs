@@ -7,6 +7,9 @@ namespace ActiveBear.Services
     {
         public static string Sha256(string rawData)
         {
+            if (string.IsNullOrEmpty(rawData))
+                return string.Empty;
+
             using (SHA256 sha256Hash = SHA256.Create())
             {
                 StringBuilder builder = new StringBuilder();
