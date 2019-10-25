@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using ActiveBear.Services;
 using ActiveBear.Models;
 using Newtonsoft.Json;
-using System;
 
 namespace ActiveBear.Hubs
 {
-    public class ChatHub : Hub
+    public class ChatHub : Hub<IChatHub>
     {
         // Client requests the current user (lookup by cookieID)
         public async Task CurrentUser(string cookiePacket)
@@ -20,7 +19,7 @@ namespace ActiveBear.Hubs
                 var userCookie = JsonConvert.DeserializeObject<CookiePacket>(cookiePacket).UserCookie;
                 var currentUser = await UserService.ExistingUser(userCookie);
                 if (currentUser != null)
-                    await Clients.Caller.SendAsync("CurrentUser", currentUser.Name);
+                    await Clients.Caller.CurrentUser(currentUser.Name);
             }
             catch
             {
@@ -38,8 +37,7 @@ namespace ActiveBear.Hubs
             if (message == null) return;    // If our message creation failed
 
             var messageBlob = JsonConvert.SerializeObject(message);
-            await Clients.Group(ChatHubHelper.GroupFor(messagePacket)).SendAsync
-                ("ReceiveMessage", messageBlob);
+            await Clients.Group(ChatHubHelper.GroupFor(messagePacket)).ReceiveMessage(messageBlob);
         }
 
         // Client has requested all messages for this channel
@@ -65,13 +63,13 @@ namespace ActiveBear.Hubs
             // Send channel messages to the validated user
             var messages = await ChannelService.MessagesFor(channel);
             var channelMessages = JsonConvert.SerializeObject(messages);
-            await Clients.Caller.SendAsync("ReceiveAllMessages", channelMessages);
+            await Clients.Caller.ReceiveAllMessages(channelMessages);
 
             // Add the user to the relevant signalR group
             await Groups.AddToGroupAsync(Context.ConnectionId, ChatHubHelper.GroupFor(channelInfoPacket));
             // Notify group they joined
             var notification = currentUser.Name + " has joined!";
-            await Clients.Group(ChatHubHelper.GroupFor(channelInfoPacket)).SendAsync("Notification", notification);
+            await Clients.Group(ChatHubHelper.GroupFor(channelInfoPacket)).Notification(notification);
         }
 
         // Attempt to create a new channel from the given data
@@ -84,7 +82,7 @@ namespace ActiveBear.Hubs
                 Channel channel = await ChannelService.CreateChannel(
                     packet.ChannelTitle, packet.ChannelKey, user);
 
-                if (channel != null) await Clients.Caller.SendAsync("ChannelCreated", channel.Id);
+                if (channel != null) await Clients.Caller.ChannelCreated(channel.Id);
                 // TODO - return error if channel or user is null
             }
             catch
