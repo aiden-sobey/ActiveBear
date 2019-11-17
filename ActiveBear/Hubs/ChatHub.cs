@@ -8,6 +8,18 @@ namespace ActiveBear.Hubs
 {
     public class ChatHub : Hub<IChatHub>
     {
+        private ChannelService channelService;
+        private UserService userService;
+        private MessageService messageService;
+
+        public ChatHub()
+        {
+            var context = DbService.NewDbContext();
+            channelService = new ChannelService(context);
+            userService = new UserService(context);
+            messageService = new MessageService(context);
+        }
+
         // Client requests the current user (lookup by cookieID)
         public async Task CurrentUser(string cookiePacket)
         {
@@ -17,7 +29,7 @@ namespace ActiveBear.Hubs
             {
                 // Handling direct user input here, so be very cautious with it
                 var userCookie = JsonConvert.DeserializeObject<CookiePacket>(cookiePacket).UserCookie;
-                var currentUser = await UserService.ExistingUser(userCookie);
+                var currentUser = await userService.ExistingUser(userCookie);
                 if (currentUser != null)
                     await Clients.Caller.CurrentUser(currentUser.Name);
             }
@@ -32,7 +44,7 @@ namespace ActiveBear.Hubs
         {
             if (string.IsNullOrEmpty(messagePacket)) return;
 
-            var message = await MessageService.NewMessageFromPacket(messagePacket);
+            var message = await messageService.NewMessageFromPacket(messagePacket);
 
             if (message == null) return;    // If our message creation failed
 
@@ -50,8 +62,8 @@ namespace ActiveBear.Hubs
             try
             {
                 packet = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
-                currentUser = await UserService.ExistingUser(packet.UserCookie);
-                channel = await ChannelService.GetChannel(packet.Channel);
+                currentUser = await userService.ExistingUser(packet.UserCookie);
+                channel = await channelService.GetChannel(packet.Channel);
             }
             catch
             {
@@ -61,7 +73,7 @@ namespace ActiveBear.Hubs
             if (currentUser == null) return;
 
             // Send channel messages to the validated user
-            var messages = await ChannelService.MessagesFor(channel);
+            var messages = await channelService.MessagesFor(channel);
             var channelMessages = JsonConvert.SerializeObject(messages);
             await Clients.Caller.ReceiveAllMessages(channelMessages);
 
@@ -78,8 +90,8 @@ namespace ActiveBear.Hubs
             try
             {
                 var packet = JsonConvert.DeserializeObject<ChannelCreationPacket>(channelCreationPacket);
-                var user = await UserService.ExistingUser(packet.UserCookie);
-                Channel channel = await ChannelService.CreateChannel(
+                var user = await userService.ExistingUser(packet.UserCookie);
+                Channel channel = await channelService.CreateChannel(
                     packet.ChannelTitle, packet.ChannelKey, user);
 
                 if (channel != null) await Clients.Caller.ChannelCreated(channel.Id);

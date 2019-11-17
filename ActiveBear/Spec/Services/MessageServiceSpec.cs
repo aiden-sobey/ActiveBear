@@ -12,17 +12,28 @@ namespace ActiveBear.Spec.Services
     [TestFixture]
     public class MessageServiceSpec
     {
-        private Channel channel;
         private User user;
-        private string packet;
+        private Channel channel;
+
+        private ActiveBearContext context;
+        private UserService userService;
+        private ChannelService channelService;
+        private MessageService messageService;
 
         private const string Lorem = "Lorem";
+        private string packet;
 
         [SetUp]
         protected async Task SetUp()
         {
-            user = await UserService.CreateUser(Lorem, Lorem, Lorem);
-            channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
+            context = DbService.NewDbContext();
+            userService = new UserService(context);
+            channelService = new ChannelService(context);
+            messageService = new MessageService(context);
+
+            user = await userService.CreateUser(Lorem, Lorem, Lorem);
+            channel = await channelService.CreateChannel(Lorem, Lorem, user);
+
             packet = JsonConvert.SerializeObject(new MessagePacket
             {
                 UserCookie = user.CookieId,
@@ -31,10 +42,16 @@ namespace ActiveBear.Spec.Services
             });
         }
 
+        [TearDown]
+        protected void TearDown()
+        {
+            context.Dispose();
+        }
+
         [Test]
         public async Task NewMessageCreatesMessage()
         {
-            var message = await MessageService.NewMessage(user, channel, Lorem);
+            var message = await messageService.NewMessage(user, channel, Lorem);
             Assert.Equals(Lorem, message.EncryptedContents);
             await CheckMessageExists(message);
         }
@@ -42,16 +59,16 @@ namespace ActiveBear.Spec.Services
         [Test]
         public async Task NewMessageFromPacketCreatesMessage()
         {
-            var message = await MessageService.NewMessageFromPacket(packet);
+            var message = await messageService.NewMessageFromPacket(packet);
             await CheckMessageExists(message);
         }
 
         [Test]
         public async Task InvalidNewMessageReturnsNull()
         {
-            Assert.IsNull(await MessageService.NewMessage(null, channel, Lorem));
-            Assert.IsNull(await MessageService.NewMessage(user, null, Lorem));
-            Assert.IsNull(await MessageService.NewMessage(user, channel, ""));
+            Assert.IsNull(await messageService.NewMessage(null, channel, Lorem));
+            Assert.IsNull(await messageService.NewMessage(user, null, Lorem));
+            Assert.IsNull(await messageService.NewMessage(user, channel, ""));
 
             Assert.IsNull(await NewMessageFromPacket(Guid.Empty, channel.Id, Lorem));
             Assert.IsNull(await NewMessageFromPacket(user.CookieId, Guid.Empty, Lorem));
@@ -71,13 +88,13 @@ namespace ActiveBear.Spec.Services
             };
 
             var jsonPacket = JsonConvert.SerializeObject(messagePacket);
-            return await MessageService.NewMessageFromPacket(jsonPacket);
+            return await messageService.NewMessageFromPacket(jsonPacket);
         }
 
         private async Task CheckMessageExists(Message message)
         {
             Assert.IsNotNull(message);
-            var channelMessages = await ChannelService.MessagesFor(message.Channel);
+            var channelMessages = await channelService.MessagesFor(message.Channel);
             Assert.IsNotEmpty(channelMessages);
             var savedMessage = channelMessages.FirstOrDefault(m => m.Id == message.Id);
             Assert.IsNotNull(savedMessage);

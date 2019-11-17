@@ -2,13 +2,14 @@
 using ActiveBear.Models;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
-    public static class CookieService
+    public class CookieService : BaseService
     {
-        public static void GenerateUserCookie(User user, HttpResponse response)
+        public CookieService(ActiveBearContext _context) : base(_context) { }
+
+        public void GenerateUserCookie(User user, HttpResponse response)
         {
             var cookieOption = new CookieOptions();
             cookieOption.IsEssential = true;
@@ -18,7 +19,7 @@ namespace ActiveBear.Services
             response.Cookies.Append(Constants.User.CookieKey, user.CookieId.ToString(), cookieOption);
         }
 
-        public static async Task<User> CurrentUser(HttpRequest request)
+        public async Task<User> CurrentUser(HttpRequest request)
         {
             if (!request.Cookies.ContainsKey(Constants.User.CookieKey))
                 return null;
@@ -26,7 +27,8 @@ namespace ActiveBear.Services
             try
             {
                 var requestCookie = Guid.Parse(request.Cookies[Constants.User.CookieKey]);
-                return await UserService.ExistingUser(requestCookie);
+                var userService = new UserService(context);
+                return await userService.ExistingUser(requestCookie);
             }
             catch
             {
@@ -34,7 +36,7 @@ namespace ActiveBear.Services
             }
         }
 
-        public static void DeleteUserCookie(HttpResponse response)
+        public void DeleteUserCookie(HttpResponse response)
         {
             response.Cookies.Delete(Constants.User.CookieKey);
         }

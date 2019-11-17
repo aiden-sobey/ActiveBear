@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
-    public static class UserService
+    public class UserService : BaseService
     {
-        public static async Task<User> CreateUser(string name, string password, string description)
-        {
-            var context = DbService.NewDbContext();
+        public UserService(ActiveBearContext _context) : base(_context) { }
 
+        public async Task<User> CreateUser(string name, string password, string description)
+        {
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password)) return null;
             if (await ExistingUser(name) != null) return null;
 
@@ -28,30 +28,25 @@ namespace ActiveBear.Services
             return newUser;
         }
 
-        public static async Task<User> ExistingUser(string name, string password)
+        public async Task<User> ExistingUser(string name, string password)
         {
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
                 return null;
 
-            var context = DbService.NewDbContext();
             var hashedPassword = EncryptionService.Sha256(password);
             return await context.Users.FirstOrDefaultAsync(u => u.Name == name &&
                                                                 u.Password == hashedPassword);
         }
 
-        public static async Task<User> ExistingUser(string name)
+        public async Task<User> ExistingUser(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
-
-            var context = DbService.NewDbContext();
             return await context.Users.FirstOrDefaultAsync(u => u.Name == name);
         }
 
-        public static async Task<User> ExistingUser(Guid cookieId)
+        public async Task<User> ExistingUser(Guid cookieId)
         {
-            var context = DbService.NewDbContext();
             if (cookieId == Guid.Empty) return null;
-
             return await context.Users.FirstOrDefaultAsync(u => u.CookieId == cookieId);
         }
     }

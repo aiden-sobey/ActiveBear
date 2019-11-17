@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ActiveBear.Hubs;
 using ActiveBear.Models;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace ActiveBear.Services
 {
-    public static class MessageService
+    public class MessageService : BaseService
     {
-        public static async Task<Message> NewMessage(User sender, Channel channel, string content)
+        public MessageService(ActiveBearContext _context) : base(_context) { }
+
+        public async Task<Message> NewMessage(User sender, Channel channel, string content)
         {
             if (sender == null || channel.Id == Guid.Empty || string.IsNullOrEmpty(content))
                 return null;
-
-            var context = DbService.NewDbContext();
 
             var newMessage = new Message
             {
@@ -31,7 +28,7 @@ namespace ActiveBear.Services
             return newMessage;
         }
 
-        public static async Task<Message> NewMessageFromPacket(string messagePacket)
+        public async Task<Message> NewMessageFromPacket(string messagePacket)
         {
             Guid channelId, userCookie;
             MessagePacket packet;
@@ -47,9 +44,13 @@ namespace ActiveBear.Services
                 return null;
             }
 
-            var channel = await ChannelService.GetChannel(channelId);
-            var user = await UserService.ExistingUser(userCookie);
-            var auth = await ChannelAuthService.UserIsAuthed(channel, user);
+            var channelService = new ChannelService(context);
+            var userService = new UserService(context);
+            var channelAuthService = new ChannelAuthService(context);
+
+            var channel = await channelService.GetChannel(channelId);
+            var user = await userService.ExistingUser(userCookie);
+            var auth = await channelAuthService.UserIsAuthed(channel, user);
             if (!auth || channel == null || user == null)
                 return null;
 

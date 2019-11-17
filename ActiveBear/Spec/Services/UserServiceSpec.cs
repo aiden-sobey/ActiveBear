@@ -10,12 +10,25 @@ namespace ActiveBear.Spec.Services
     public class UserServiceSpec
     {
         private User user;
-        internal const string Lorem = "Lorem";
+
+        private ActiveBearContext context;
+        private UserService userService;
+
+        private const string Lorem = "Lorem";
 
         [SetUp]
         protected async Task SetUp()
         {
-            user = await UserService.CreateUser(Lorem, Lorem, Lorem);
+            context = DbService.NewDbContext();
+            userService = new UserService(context);
+
+            user = await userService.CreateUser(Lorem, Lorem, Lorem);
+        }
+
+        [TearDown]
+        protected void TearDown()
+        {
+            context.Dispose();
         }
 
         [Test]
@@ -27,9 +40,9 @@ namespace ActiveBear.Spec.Services
         [Test]
         public async Task InvalidCreateUserFails()
         {
-            Assert.IsNull(await UserService.CreateUser(Lorem, "", Lorem));
-            Assert.IsNull(await UserService.CreateUser("", Lorem, Lorem));
-            Assert.IsNull(await UserService.CreateUser(Lorem, null, Lorem));
+            Assert.IsNull(await userService.CreateUser(Lorem, "", Lorem));
+            Assert.IsNull(await userService.CreateUser("", Lorem, Lorem));
+            Assert.IsNull(await userService.CreateUser(Lorem, null, Lorem));
         }
 
         [Test]
@@ -38,7 +51,7 @@ namespace ActiveBear.Spec.Services
             // Create a user to occupy the namespace
             Assert.IsNotNull(user);
             // Try to create user with the same name, expect it to fail
-            Assert.IsNull(await UserService.CreateUser(Lorem, Lorem, Lorem));
+            Assert.IsNull(await userService.CreateUser(Lorem, Lorem, Lorem));
         }
 
         [Test]
@@ -59,39 +72,39 @@ namespace ActiveBear.Spec.Services
         public async Task ExistingUserFromCookieWorks()
         {
             // Get the existing user
-            var foundUser = await UserService.ExistingUser(user.CookieId);
+            var foundUser = await userService.ExistingUser(user.CookieId);
             Assert.IsNotNull(foundUser);
 
             // Try a get with invalid details, it should fail
-            Assert.IsNull(await UserService.ExistingUser(Guid.NewGuid()));
-            Assert.IsNull(await UserService.ExistingUser(null));
+            Assert.IsNull(await userService.ExistingUser(Guid.NewGuid()));
+            Assert.IsNull(await userService.ExistingUser(null));
         }
 
         [Test]
         public async Task ExistingUserMatchesOnNameOnly()
         {
-            var foundUser = await UserService.ExistingUser(Lorem);
+            var foundUser = await userService.ExistingUser(Lorem);
 
             // Get user with correct name & pw
             Assert.AreEqual(user.CookieId, foundUser.CookieId);
             Assert.IsTrue(user.Equals(foundUser));
 
             // Try to get user with incorrect details
-            foundUser = await UserService.ExistingUser("test");
+            foundUser = await userService.ExistingUser("test");
             Assert.IsNull(foundUser);
         }
 
         [Test]
         public async Task ExistingUserMatchesOnNameAndPw()
         {
-            var foundUser = await UserService.ExistingUser(Lorem, Lorem);
+            var foundUser = await userService.ExistingUser(Lorem, Lorem);
 
             // Get user with correct name & pw
             Assert.AreEqual(user.CookieId, foundUser.CookieId);
             Assert.IsTrue(user.Equals(foundUser));
 
             // Try to get user with incorrect details
-            foundUser = await UserService.ExistingUser(Lorem, "test");
+            foundUser = await userService.ExistingUser(Lorem, "test");
             Assert.IsNull(foundUser);
         }
     }

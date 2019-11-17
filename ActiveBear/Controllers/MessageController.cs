@@ -8,22 +8,23 @@ namespace ActiveBear.Controllers
 {
     public class MessageController : Controller
     {
-        private readonly ActiveBearContext _context;
+        private readonly ActiveBearContext context;
 
-        public MessageController(ActiveBearContext context)
+        public MessageController(ActiveBearContext _context)
         {
-            _context = context;
+            context = _context;
         }
 
         public async Task<IActionResult> ViewAll()
         {
-            var currentUser = await CookieService.CurrentUser(Request);
+            var cookie = new CookieService(context);
+            var currentUser = await cookie.CurrentUser(Request);
 
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
 
             ViewBag.CurrentUser = currentUser;
-            ViewBag.Channels = await _context.Channels.ToListAsync();
+            ViewBag.Channels = await context.Channels.ToListAsync();
 
             return View();
         }

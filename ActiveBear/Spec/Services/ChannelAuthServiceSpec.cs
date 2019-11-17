@@ -12,13 +12,29 @@ namespace ActiveBear.Spec.Services
         private User user;
         private Channel channel;
 
+        private ActiveBearContext context;
+        private UserService userService;
+        private ChannelService channelService;
+        private ChannelAuthService authService;
+
         private const string Lorem = "Lorem";
 
         [SetUp]
         protected async Task SetUp()
         {
-            user = await UserService.CreateUser(Lorem, Lorem, Lorem);
-            channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
+            context = DbService.NewDbContext();
+            userService = new UserService(context);
+            channelService = new ChannelService(context);
+            authService = new ChannelAuthService(context);
+
+            user = await userService.CreateUser(Lorem, Lorem, Lorem);
+            channel = await channelService.CreateChannel(Lorem, Lorem, user);
+        }
+
+        [TearDown]
+        protected void TearDown()
+        {
+            context.Dispose();
         }
 
         // Create Auth
@@ -26,17 +42,15 @@ namespace ActiveBear.Spec.Services
         [Test]
         public async Task CreateAuthForAlreadyAuthedUserExits()
         {
-            var context = DbService.NewDbContext();
-
             // Create auth
-            await ChannelAuthService.CreateAuth(channel, user);
+            await authService.CreateAuth(channel, user);
 
             // Assert auth count is one
             var authCount = context.ChannelAuths.Where(ca => ca.User == user.Name).ToList().Count;
             Assert.AreEqual(1, authCount);
 
             // Try create second auth
-            await ChannelAuthService.CreateAuth(channel, user);
+            await authService.CreateAuth(channel, user);
 
             // Asser auth count is still one
             authCount = context.ChannelAuths.Where(ca => ca.User == user.Name).ToList().Count;
@@ -46,12 +60,12 @@ namespace ActiveBear.Spec.Services
         [Test]
         public async Task CreateAuthWithEmptyParamsExits()
         {
-            Assert.IsFalse(await ChannelAuthService.UserIsAuthed(channel, user));
-            await ChannelAuthService.CreateAuth(channel, null);
-            await ChannelAuthService.CreateAuth(null, user);
-            await ChannelAuthService.CreateAuth(null, null);
-            await ChannelAuthService.CreateAuth(new Channel(), new User());
-            Assert.IsFalse(await ChannelAuthService.UserIsAuthed(channel, user));
+            Assert.IsFalse(await authService.UserIsAuthed(channel, user));
+            await authService.CreateAuth(channel, null);
+            await authService.CreateAuth(null, user);
+            await authService.CreateAuth(null, null);
+            await authService.CreateAuth(new Channel(), new User());
+            Assert.IsFalse(await authService.UserIsAuthed(channel, user));
         }
 
         // User Is Authed
@@ -63,16 +77,16 @@ namespace ActiveBear.Spec.Services
             // Checks an authed user returns true
             // Checks auths can be created
 
-            Assert.IsFalse(await ChannelAuthService.UserIsAuthed(channel, user));
-            await ChannelAuthService.CreateAuth(channel, user);
-            Assert.IsTrue(await ChannelAuthService.UserIsAuthed(channel, user));
+            Assert.IsFalse(await authService.UserIsAuthed(channel, user));
+            await authService.CreateAuth(channel, user);
+            Assert.IsTrue(await authService.UserIsAuthed(channel, user));
         }
 
         [Test]
         public async Task CheckAuthWithEmptyParamsIsFalse()
         {
-            Assert.IsFalse(await ChannelAuthService.UserIsAuthed(channel, null));
-            Assert.IsFalse(await ChannelAuthService.UserIsAuthed(null, user));
+            Assert.IsFalse(await authService.UserIsAuthed(channel, null));
+            Assert.IsFalse(await authService.UserIsAuthed(null, user));
         }
     }
 }
