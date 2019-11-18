@@ -1,30 +1,11 @@
 ﻿using System.Threading.Tasks;
-using ActiveBear.Models;
-using ActiveBear.Services;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
 {
     [TestFixture]
-    public class CookieServiceSpec
+    public class CookieServiceSpec : ServiceSpec
     {
-        private ActiveBearContext context;
-        private UserService userService;
-        internal const string Lorem = "Lorem";
-
-        [SetUp]
-        protected void SetUp()
-        {
-            context = DbService.NewTestContext();
-            userService = new UserService(context);
-        }
-
-        [TearDown]
-        protected void TearDown()
-        {
-            context.Dispose();
-        }
-
         [Test]
         public async Task CurrentUserReturnsRightUser()
         {

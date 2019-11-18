@@ -1,39 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ActiveBear.Models;
 using ActiveBear.Services;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
 {
     [TestFixture]
-    public class UserServiceSpec
+    public class UserServiceSpec : ServiceSpec
     {
-        private User user;
-
-        private ActiveBearContext context;
-        private UserService userService;
-
-        private const string Lorem = "Lorem";
-
-        [SetUp]
-        protected async Task SetUp()
-        {
-            context = DbService.NewTestContext();
-            userService = new UserService(context);
-
-            user = await userService.ExistingUser(Lorem);
-            if (user == null)
-                user = await userService.CreateUser(Lorem, Lorem, Lorem);
-        }
-
-        [TearDown]
-        protected void TearDown()
-        {
-            context.Dispose();
-            user = null;
-        }
-
         [Test]
         public void ValidCreateUserSucceeds()
         {

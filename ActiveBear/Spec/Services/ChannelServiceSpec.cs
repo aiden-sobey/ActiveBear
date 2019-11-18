@@ -7,38 +7,9 @@ using NUnit.Framework;
 namespace ActiveBear.Spec.Services
 {
     [TestFixture]
-    public class ChannelServiceSpec
+    public class ChannelServiceSpec : ServiceSpec
     {
-        private User user;
-
-        private ActiveBearContext context;
-        private UserService userService;
-        private ChannelService channelService;
-        private MessageService messageService;
-
-        private const string Lorem = "Lorem";
         private const int MessageCount = 5;
-
-        [SetUp]
-        protected async Task SetUp()
-        {
-            context = DbService.NewTestContext();
-            userService = new UserService(context);
-            channelService = new ChannelService(context);
-            messageService = new MessageService(context);
-
-            user = await userService.ExistingUser(Lorem);
-            if (user == null)
-                user = await userService.CreateUser(Lorem, Lorem, Lorem);
-        }
-
-        [TearDown]
-        protected void TearDown()
-        {
-            context.Dispose();
-        }
-
-        // Create Channel
 
         [Test]
         public async Task CreateChannelFromIncompleteDataFails()
@@ -50,9 +21,9 @@ namespace ActiveBear.Spec.Services
         }
 
         [Test]
-        public async Task CreateChannelFromValidDataPasses()
+        public void CreateChannelFromValidDataPasses()
         {
-            var channel = await channelService.CreateChannel(Lorem, Lorem, user);
+            Assert.IsNotNull(channel);
             var hashedPassword = EncryptionService.Sha256(Lorem);
             Assert.AreEqual(user.Name, channel.CreateUser);
             Assert.AreEqual(Lorem, channel.Title);
@@ -61,10 +32,9 @@ namespace ActiveBear.Spec.Services
         }
 
         [Test]
-        public async Task DbSaveErrorIsHandled()
+        public void DbSaveErrorIsHandled()
         {
             // Try to save the same thing twice, or somehow force a SaveChanges error
-            var channel = await channelService.CreateChannel(Lorem, Lorem, user);
             Assert.IsNotNull(channel);
 
             var copyChannel = new Channel
@@ -98,7 +68,6 @@ namespace ActiveBear.Spec.Services
         [Test]
         public async Task MessagesForPopulatedChannelSucceeds()
         {
-            var channel = new Channel();
             Assert.IsNotNull(channel);
             await PopulateWithMessages(channel);
             
@@ -110,10 +79,10 @@ namespace ActiveBear.Spec.Services
 
         // Helpers
 
-        private async Task PopulateWithMessages(Channel channel)
+        private async Task PopulateWithMessages(Channel thisChannel)
         {
             for (int i = 0; i < MessageCount; i++)
-                Assert.IsNotNull(await messageService.NewMessage(user, channel, Lorem));
+                Assert.IsNotNull(await messageService.NewMessage(user, thisChannel, Lorem));
         }
     }
 }

@@ -1,44 +1,12 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ActiveBear.Models;
-using ActiveBear.Services;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
 {
     [TestFixture]
-    public class ChannelAuthServiceSpec
+    public class ChannelAuthServiceSpec : ServiceSpec
     {
-        private User user;
-        private Channel channel;
-
-        private ActiveBearContext context;
-        private UserService userService;
-        private ChannelService channelService;
-        private ChannelAuthService authService;
-
-        private const string Lorem = "Lorem";
-
-        [SetUp]
-        protected async Task SetUp()
-        {
-            context = DbService.NewTestContext();
-            userService = new UserService(context);
-            channelService = new ChannelService(context);
-            authService = new ChannelAuthService(context);
-
-            user = await userService.CreateUser(Lorem, Lorem, Lorem);
-            channel = await channelService.CreateChannel(Lorem, Lorem, user);
-        }
-
-        [TearDown]
-        protected void TearDown()
-        {
-            context.Dispose();
-        }
-
-        // Create Auth
-
         [Test]
         public async Task CreateAuthForAlreadyAuthedUserExits()
         {

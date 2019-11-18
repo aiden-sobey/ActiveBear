@@ -3,56 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using ActiveBear.Hubs;
 using ActiveBear.Models;
-using ActiveBear.Services;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
 {
     [TestFixture]
-    public class MessageServiceSpec
+    public class MessageServiceSpec : ServiceSpec
     {
-        private User user;
-        private Channel channel;
-
-        private ActiveBearContext context;
-        private UserService userService;
-        private ChannelService channelService;
-        private MessageService messageService;
-        private ChannelAuthService authService;
-
-        private const string Lorem = "Lorem";
-        private string packet;
-
-        [SetUp]
-        protected async Task SetUp()
-        {
-            context = DbService.NewTestContext();
-            userService = new UserService(context);
-            channelService = new ChannelService(context);
-            messageService = new MessageService(context);
-            authService = new ChannelAuthService(context);
-
-            user = await userService.ExistingUser(Lorem);
-            if (user == null)
-                user = await userService.CreateUser(Lorem, Lorem, Lorem);
-
-            channel = await channelService.CreateChannel(Lorem, Lorem, user);
-
-            packet = JsonConvert.SerializeObject(new MessagePacket
-            {
-                UserCookie = user.CookieId,
-                Channel = channel.Id,
-                Message = Lorem
-            });
-        }
-
-        [TearDown]
-        protected void TearDown()
-        {
-            context.Dispose();
-        }
-
         [Test]
         public async Task NewMessageCreatesMessage()
         {
