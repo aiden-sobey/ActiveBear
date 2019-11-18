@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Services
 {
-    public static class ChannelAuthService
+    public class ChannelAuthService : BaseService
     {
-        public static async Task CreateAuth(Channel channel, User user)
-        {
-            if (channel == null || user == null) return;
-            if (await UserIsAuthed(channel, user)) return;
+        public ChannelAuthService(ActiveBearContext _context) : base(_context) { }
 
-            var context = DbService.NewDbContext();
+        public async Task<bool> CreateAuth(Channel channel, User user)
+        {
+            if (channel == null || user == null) return false;
+            if (await UserIsAuthed(channel, user)) return false;
 
             var channelAuth = new ChannelAuth
             {
@@ -22,14 +22,14 @@ namespace ActiveBear.Services
 
             context.Add(channelAuth);
             await context.SaveChangesAsync();
+            return true;
         }
 
-        public static async Task<bool> UserIsAuthed(Channel channel, User user)
+        public async Task<bool> UserIsAuthed(Channel channel, User user)
         {
             if (channel == null || user == null)
                 return false;
 
-            var context = DbService.NewDbContext();
             var auth = await context.ChannelAuths.FirstOrDefaultAsync(au => au.Channel == channel.Id &&
                                                                             au.User == user.Name);
 

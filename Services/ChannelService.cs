@@ -7,14 +7,15 @@ using System;
 
 namespace ActiveBear.Services
 {
-    public static class ChannelService
+    public class ChannelService : BaseService
     {
-        public static async Task<Channel> CreateChannel(string title, string key, User createUser)
+        public ChannelService(ActiveBearContext _context) : base(_context) { }
+
+        public async Task<Channel> CreateChannel(string title, string key, User createUser)
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(key) || createUser == null)
                 return null;
 
-            var context = DbService.NewDbContext();
             var channel = new Channel
             {
                 Title = title,
@@ -28,14 +29,13 @@ namespace ActiveBear.Services
             return channel;
         }
 
-        public static async Task<List<Message>> MessagesFor(Channel channel)
+        public async Task<List<Message>> MessagesFor(Channel channel)
         {
             if (channel == null) return new List<Message>();
-            var context = DbService.NewDbContext();
             return await context.Messages.Where(m => m.Channel == channel.Id).ToListAsync();
         }
 
-        public static async Task<List<Message>> MessagesFor(Guid channelId)
+        public async Task<List<Message>> MessagesFor(Guid channelId)
         {
             if (channelId == Guid.Empty) return new List<Message>();
 
@@ -43,9 +43,8 @@ namespace ActiveBear.Services
         }
 
         // TODO: write test coverage for this
-        public static async Task<Channel> GetChannel(Guid channelId)
+        public async Task<Channel> GetChannel(Guid channelId)
         {
-            var context = DbService.NewDbContext();
             return await context.Channels.FirstOrDefaultAsync(c => c.Id == channelId);
         }
     }

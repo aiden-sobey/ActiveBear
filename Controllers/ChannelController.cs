@@ -9,11 +9,11 @@ namespace ActiveBear.Controllers
 {
     public class ChannelController : Controller
     {
-        private readonly ActiveBearContext _context;
+        private readonly ActiveBearContext context;
 
-        public ChannelController(ActiveBearContext context)
+        public ChannelController(ActiveBearContext _context)
         {
-            _context = context;
+            context = _context;
         }
 
         public async Task<IActionResult> Engage(Guid? id)
@@ -21,15 +21,18 @@ namespace ActiveBear.Controllers
             if (id == null)
                 return NotFound();
 
-            var channel = await _context.Channels.FirstOrDefaultAsync(x => x.Id == id);
+            var channel = await context.Channels.FirstOrDefaultAsync(x => x.Id == id);
             if (channel == null)
                 return NotFound();
 
             // Check the current user is authorised
-            var currentUser = await CookieService.CurrentUser(Request);
+            var cookie = new CookieService(context);
+            var currentUser = await cookie.CurrentUser(Request);
             if (currentUser == null)
                 return Redirect(Constants.Routes.Login);
-            var auth = await ChannelAuthService.UserIsAuthed(channel, currentUser);
+
+            var channelAuth = new ChannelAuthService(context);
+            var auth = await channelAuth.UserIsAuthed(channel, currentUser);
             if (!auth)
                 return Redirect(Constants.Routes.AuthUserToChannel + id.ToString());
 

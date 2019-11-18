@@ -2,23 +2,26 @@
 using ActiveBear.Models;
 using ActiveBear.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ActiveBear.Controllers
 {
     public class UserController : Controller
     {
-        private readonly ActiveBearContext _context;
+        private readonly ActiveBearContext context;
+        private CookieService cookie;
+        private UserService userService;
 
-        public UserController(ActiveBearContext context)
+        public UserController(ActiveBearContext _context)
         {
-            _context = context;
+            context = _context;
+            cookie = new CookieService(context);
+            userService = new UserService(context);
         }
 
         [HttpGet]
         public async Task<IActionResult> Login()
         {
-            var currentUser = await CookieService.CurrentUser(Request);
+            var currentUser = await cookie.CurrentUser(Request);
             if (currentUser != null)
                 return Redirect(Constants.Routes.Home);
 
@@ -34,7 +37,7 @@ namespace ActiveBear.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(User user)
         {
-            CookieService.DeleteUserCookie(Response);
+            cookie.DeleteUserCookie(Response);
 
             if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password))
             {
@@ -42,7 +45,7 @@ namespace ActiveBear.Controllers
                 return View();
             }
 
-            var existingUser = await UserService.ExistingUser(user.Name, user.Password);
+            var existingUser = await userService.ExistingUser(user.Name, user.Password);
 
             if (existingUser == null)
             {
@@ -50,7 +53,7 @@ namespace ActiveBear.Controllers
                 return View();
             }
 
-            CookieService.GenerateUserCookie(existingUser, Response);
+            cookie.GenerateUserCookie(existingUser, Response);
 
             return Redirect(Constants.Routes.Home);
         }
@@ -58,7 +61,7 @@ namespace ActiveBear.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(User userRequest)
         {
-            CookieService.DeleteUserCookie(Response);
+            cookie.DeleteUserCookie(Response);
 
             if (string.IsNullOrEmpty(userRequest.Name) ||
                 string.IsNullOrEmpty(userRequest.Password))
@@ -73,14 +76,14 @@ namespace ActiveBear.Controllers
                 return View();
             }
 
-            var existingUser = await UserService.ExistingUser(userRequest.Name);
+            var existingUser = await userService.ExistingUser(userRequest.Name);
             if (existingUser != null)
             {
                 ViewBag.Error = "A user with that name already exists!";
                 return View();
             }
 
-            var newUser = await UserService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description);
+            var newUser = await userService.CreateUser(userRequest.Name, userRequest.Password, userRequest.Description);
             if (newUser != null)
                 return Redirect(Constants.Routes.Login);
 
@@ -91,7 +94,7 @@ namespace ActiveBear.Controllers
 
         public IActionResult Logout()
         {
-            CookieService.DeleteUserCookie(Response);
+            cookie.DeleteUserCookie(Response);
             return Redirect(Constants.Routes.Login);
         }
     }

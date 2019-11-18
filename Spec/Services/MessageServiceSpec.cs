@@ -3,55 +3,44 @@ using System.Linq;
 using System.Threading.Tasks;
 using ActiveBear.Hubs;
 using ActiveBear.Models;
-using ActiveBear.Services;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace ActiveBear.Spec.Services
 {
     [TestFixture]
-    public class MessageServiceSpec
+    public class MessageServiceSpec : ServiceSpec
     {
-        private Channel channel;
-        private User user;
-        private string packet;
-
-        private const string Lorem = "Lorem";
-
-        [SetUp]
-        protected async Task SetUp()
-        {
-            user = await UserService.CreateUser(Lorem, Lorem, Lorem);
-            channel = await ChannelService.CreateChannel(Lorem, Lorem, user);
-            packet = JsonConvert.SerializeObject(new MessagePacket
-            {
-                UserCookie = user.CookieId,
-                Channel = channel.Id,
-                Message = Lorem
-            });
-        }
-
         [Test]
         public async Task NewMessageCreatesMessage()
         {
-            var message = await MessageService.NewMessage(user, channel, Lorem);
-            Assert.Equals(Lorem, message.EncryptedContents);
+            var message = await messageService.NewMessage(user, channel, Lorem);
+            Assert.AreEqual(Lorem, message.EncryptedContents);
             await CheckMessageExists(message);
         }
 
         [Test]
         public async Task NewMessageFromPacketCreatesMessage()
         {
-            var message = await MessageService.NewMessageFromPacket(packet);
+            await authService.CreateAuth(channel, user);
+            var message = await messageService.NewMessageFromPacket(packet);
             await CheckMessageExists(message);
+        }
+
+        [Test]
+        public async Task NewMessageFromPacketWithoutAuthFails()
+
+        {
+            var message = await messageService.NewMessageFromPacket(packet);
+            Assert.IsNull(message);
         }
 
         [Test]
         public async Task InvalidNewMessageReturnsNull()
         {
-            Assert.IsNull(await MessageService.NewMessage(null, channel, Lorem));
-            Assert.IsNull(await MessageService.NewMessage(user, null, Lorem));
-            Assert.IsNull(await MessageService.NewMessage(user, channel, ""));
+            Assert.IsNull(await messageService.NewMessage(null, channel, Lorem));
+            Assert.IsNull(await messageService.NewMessage(user, null, Lorem));
+            Assert.IsNull(await messageService.NewMessage(user, channel, ""));
 
             Assert.IsNull(await NewMessageFromPacket(Guid.Empty, channel.Id, Lorem));
             Assert.IsNull(await NewMessageFromPacket(user.CookieId, Guid.Empty, Lorem));
@@ -71,22 +60,22 @@ namespace ActiveBear.Spec.Services
             };
 
             var jsonPacket = JsonConvert.SerializeObject(messagePacket);
-            return await MessageService.NewMessageFromPacket(jsonPacket);
+            return await messageService.NewMessageFromPacket(jsonPacket);
         }
 
         private async Task CheckMessageExists(Message message)
         {
             Assert.IsNotNull(message);
-            var channelMessages = await ChannelService.MessagesFor(message.Channel);
+            var channelMessages = await channelService.MessagesFor(message.Channel);
             Assert.IsNotEmpty(channelMessages);
             var savedMessage = channelMessages.FirstOrDefault(m => m.Id == message.Id);
             Assert.IsNotNull(savedMessage);
 
-            Assert.Equals(Lorem, message.EncryptedContents);
-            Assert.Equals(message.EncryptedContents, savedMessage.EncryptedContents);
-            Assert.Equals(message.Channel, savedMessage.Channel);
-            Assert.Equals(message.Sender, savedMessage.Sender);
-            Assert.Equals(message.SendDate, savedMessage.SendDate);
+            Assert.AreEqual(Lorem, message.EncryptedContents);
+            Assert.AreEqual(message.EncryptedContents, savedMessage.EncryptedContents);
+            Assert.AreEqual(message.Channel, savedMessage.Channel);
+            Assert.AreEqual(message.Sender, savedMessage.Sender);
+            Assert.AreEqual(message.SendDate, savedMessage.SendDate);
         }
     }
 }

@@ -39,5 +39,6 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\.chatHub.js.swp" />
     <Content Remove="wwwroot\js\.messager.js.swp" />
+    <Content Remove="wwwroot\js\site.min.js" />
   </ItemGroup>
 </Project>
