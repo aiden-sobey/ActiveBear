@@ -19,16 +19,19 @@ namespace ActiveBear.Spec.Services
         [SetUp]
         protected async Task SetUp()
         {
-            context = DbService.NewDbContext();
+            context = DbService.NewTestContext();
             userService = new UserService(context);
 
-            user = await userService.CreateUser(Lorem, Lorem, Lorem);
+            user = await userService.ExistingUser(Lorem);
+            if (user == null)
+                user = await userService.CreateUser(Lorem, Lorem, Lorem);
         }
 
         [TearDown]
         protected void TearDown()
         {
             context.Dispose();
+            user = null;
         }
 
         [Test]

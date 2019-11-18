@@ -55,8 +55,16 @@ namespace ActiveBear.Controllers
             var hashedInput = EncryptionService.Sha256(channelAuth.HashedKey);
             if (hashedInput == channel.KeyHash)
             {
-                await channelAuthService.CreateAuth(channel, currentUser);
-                return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id);
+                var authResult = await channelAuthService.CreateAuth(channel, currentUser);
+
+                if (authResult)
+                    return Redirect(Constants.Routes.EngageChannel + "/" + channel.Id);
+                else
+                {
+                    ViewBag.Error = "There was a problem authorising you to this channel.";
+                    ViewBag.Channel = channel;
+                    return View();
+                }
             }
 
             ViewBag.Error = "Incorrect password";

@@ -12,7 +12,7 @@ namespace ActiveBear.Services
 
         public async Task<Message> NewMessage(User sender, Channel channel, string content)
         {
-            if (sender == null || channel.Id == Guid.Empty || string.IsNullOrEmpty(content))
+            if (sender == null || channel == null || channel.Id == Guid.Empty || string.IsNullOrEmpty(content))
                 return null;
 
             var newMessage = new Message

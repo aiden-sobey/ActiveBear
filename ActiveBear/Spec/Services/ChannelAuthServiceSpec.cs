@@ -22,7 +22,7 @@ namespace ActiveBear.Spec.Services
         [SetUp]
         protected async Task SetUp()
         {
-            context = DbService.NewDbContext();
+            context = DbService.NewTestContext();
             userService = new UserService(context);
             channelService = new ChannelService(context);
             authService = new ChannelAuthService(context);
@@ -45,16 +45,9 @@ namespace ActiveBear.Spec.Services
             // Create auth
             await authService.CreateAuth(channel, user);
 
-            // Assert auth count is one
-            var authCount = context.ChannelAuths.Where(ca => ca.User == user.Name).ToList().Count;
-            Assert.AreEqual(1, authCount);
-
-            // Try create second auth
-            await authService.CreateAuth(channel, user);
-
-            // Asser auth count is still one
-            authCount = context.ChannelAuths.Where(ca => ca.User == user.Name).ToList().Count;
-            Assert.AreEqual(1, authCount);
+            // Try create a duplicate auth
+            var authResult = await authService.CreateAuth(channel, user);
+            Assert.IsFalse(authResult);
         }
 
         [Test]

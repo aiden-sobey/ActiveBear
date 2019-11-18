@@ -12,5 +12,14 @@ namespace ActiveBear.Services
             options.UseSqlite(connectionString);
             return new ActiveBearContext(options.Options);
         }
+
+        public static ActiveBearContext NewTestContext()
+        {
+            var options = new DbContextOptionsBuilder<ActiveBearContext>()
+                .UseInMemoryDatabase(databaseName: "write_to_db")
+                .Options;
+
+            return new ActiveBearContext(options);
+        }
     }
 }

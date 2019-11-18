@@ -15,7 +15,7 @@ namespace ActiveBear.Spec.Services
         [SetUp]
         protected void SetUp()
         {
-            context = DbService.NewDbContext();
+            context = DbService.NewTestContext();
             userService = new UserService(context);
         }
 

@@ -19,6 +19,7 @@ namespace ActiveBear.Spec.Services
         private UserService userService;
         private ChannelService channelService;
         private MessageService messageService;
+        private ChannelAuthService authService;
 
         private const string Lorem = "Lorem";
         private string packet;
@@ -26,12 +27,16 @@ namespace ActiveBear.Spec.Services
         [SetUp]
         protected async Task SetUp()
         {
-            context = DbService.NewDbContext();
+            context = DbService.NewTestContext();
             userService = new UserService(context);
             channelService = new ChannelService(context);
             messageService = new MessageService(context);
+            authService = new ChannelAuthService(context);
 
-            user = await userService.CreateUser(Lorem, Lorem, Lorem);
+            user = await userService.ExistingUser(Lorem);
+            if (user == null)
+                user = await userService.CreateUser(Lorem, Lorem, Lorem);
+
             channel = await channelService.CreateChannel(Lorem, Lorem, user);
 
             packet = JsonConvert.SerializeObject(new MessagePacket
@@ -52,15 +57,24 @@ namespace ActiveBear.Spec.Services
         public async Task NewMessageCreatesMessage()
         {
             var message = await messageService.NewMessage(user, channel, Lorem);
-            Assert.Equals(Lorem, message.EncryptedContents);
+            Assert.AreEqual(Lorem, message.EncryptedContents);
             await CheckMessageExists(message);
         }
 
         [Test]
         public async Task NewMessageFromPacketCreatesMessage()
         {
+            await authService.CreateAuth(channel, user);
             var message = await messageService.NewMessageFromPacket(packet);
             await CheckMessageExists(message);
+        }
+
+        [Test]
+        public async Task NewMessageFromPacketWithoutAuthFails()
+
+        {
+            var message = await messageService.NewMessageFromPacket(packet);
+            Assert.IsNull(message);
         }
 
         [Test]
@@ -99,11 +113,11 @@ namespace ActiveBear.Spec.Services
             var savedMessage = channelMessages.FirstOrDefault(m => m.Id == message.Id);
             Assert.IsNotNull(savedMessage);
 
-            Assert.Equals(Lorem, message.EncryptedContents);
-            Assert.Equals(message.EncryptedContents, savedMessage.EncryptedContents);
-            Assert.Equals(message.Channel, savedMessage.Channel);
-            Assert.Equals(message.Sender, savedMessage.Sender);
-            Assert.Equals(message.SendDate, savedMessage.SendDate);
+            Assert.AreEqual(Lorem, message.EncryptedContents);
+            Assert.AreEqual(message.EncryptedContents, savedMessage.EncryptedContents);
+            Assert.AreEqual(message.Channel, savedMessage.Channel);
+            Assert.AreEqual(message.Sender, savedMessage.Sender);
+            Assert.AreEqual(message.SendDate, savedMessage.SendDate);
         }
     }
 }

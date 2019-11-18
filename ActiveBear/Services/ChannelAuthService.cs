@@ -8,10 +8,10 @@ namespace ActiveBear.Services
     {
         public ChannelAuthService(ActiveBearContext _context) : base(_context) { }
 
-        public async Task CreateAuth(Channel channel, User user)
+        public async Task<bool> CreateAuth(Channel channel, User user)
         {
-            if (channel == null || user == null) return;
-            if (await UserIsAuthed(channel, user)) return;
+            if (channel == null || user == null) return false;
+            if (await UserIsAuthed(channel, user)) return false;
 
             var channelAuth = new ChannelAuth
             {
@@ -22,6 +22,7 @@ namespace ActiveBear.Services
 
             context.Add(channelAuth);
             await context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> UserIsAuthed(Channel channel, User user)
