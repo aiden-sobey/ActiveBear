@@ -43,5 +43,31 @@ namespace ActiveBear.Controllers
         {
             return View();
         }
+
+        public IActionResult lightbulb()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult XluBtQi()
+        {
+            ViewBag.Success = "";
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult XluBtQi(string title)
+        {
+            if (title == "42069")
+            {
+                ViewBag.Success = "true";
+                ViewBag.Result = "Congratulations!!! Message Aiden the text 'lvl5ezNub' and you have won the race!";
+            }
+            else
+                ViewBag.Success = "Wrong";
+
+            return View();
+        }
     }
 }

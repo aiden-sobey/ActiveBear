@@ -1,0 +1,37 @@
+﻿@model Channel
+@{
+    var success = ViewBag.Success as string;
+    var message = ViewBag.Result as string;
+}
+
+<div class="body">
+    <div id="input_area">
+        <h2>Welcome to Tier 5</h2><br />
+        @if (success != "true")
+        {
+            <h3>The final stage! The first to complete this wins!</h3>
+            <br /><br />
+
+            <h4>For the final test, simply guess which number I'm thinking of.</h4>
+
+            if (success == "Wrong")
+            {
+                <h3 style="color: red">Nope.</h3>
+            }
+
+            <form method="post" asp-controller="Channel" asp-action="XluBtQi">
+                <div>
+                    <input asp-for="Title" placeholder="12345" />
+                </div>
+
+                <div>
+                    <input type="submit" value="Guess!" />
+                </div>
+            </form>
+        }
+        @if (success == "true")
+        {
+            <h3>@message</h3>
+        }
+    </div>
+</div>

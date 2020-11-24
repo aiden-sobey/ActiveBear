@@ -1,0 +1,16 @@
+﻿<script>
+    function goTo() {
+        var button = document.getElementById('directButton');
+        if (button && button.classList.contains('disabled')) return;
+        window.location.href = '@Url.Action("XluBtQi", "Channel")';
+    }
+</script>
+
+<div class="body">
+    <div id="input_area">
+        <h2>Welcome to Tier 4</h2><br />
+        <h4>This is where things get a little... technical.</h4>
+        <h4>But! Proceeding is very simple. Just click the button below.</h4>
+        <input id="directButton" type="button" value="Proceed to Tier 5" class="disabled" onclick="goTo()" />
+    </div>
+</div>
