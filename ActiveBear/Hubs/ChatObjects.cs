@@ -54,4 +54,16 @@ namespace ActiveBear.Hubs
         [DataMember]
         public Guid UserCookie = Guid.Empty;
     }
+
+    // Used to send notifications to the javascript. These notifications have
+    // error / severity codes so they can be rendered in an appropriate manner.
+    [DataContract]
+    class Notification
+    {
+        [DataMember]
+        public string Type = string.Empty;
+
+        [DataMember]
+        public string Contents = string.Empty;
+    }
 }

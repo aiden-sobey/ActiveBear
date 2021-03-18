@@ -35,6 +35,12 @@ class ChatHub {
 		}
 	}
 
+  static DeleteChannel() {
+    connection.invoke("DeleteChannel", this.GenerateChannelPacket()).cathc(function (err) {
+      return console.error(err.toString());
+    });
+  }
+
 	// Runtime values
 
 	static CurrentUserCookie() {

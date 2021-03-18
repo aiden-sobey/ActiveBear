@@ -92,5 +92,28 @@ namespace ActiveBear.Hubs
                 return;
             }
         }
+
+        // Delete the specified channel
+        public async Task DeleteChannel(string channelInfoPacket)
+        {
+            var packet = JsonConvert.DeserializeObject<ChannelInfoPacket>(channelInfoPacket);
+            var userIsOwner = await ChannelService.UserIsOwner(packet.UserCookie, packet.Channel);
+            if (!userIsOwner)
+            {
+                await Clients.Caller.SendAsync("Notification", ChatHubHelper.BuildError(Constants.ErrorMessages.BlockedChannelDelete));
+                return;
+            }
+
+            var channelDeleted = await ChannelService.DeleteChannel(packet.Channel);
+
+            if (channelDeleted)
+            {
+                await Clients.Caller.SendAsync("Notification", ChatHubHelper.BuildInfo(Constants.InfoMessages.ChannelDeleted));
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("Notification", ChatHubHelper.BuildError(Constants.ErrorMessages.Unknown));
+            }
+        }
     }
 }

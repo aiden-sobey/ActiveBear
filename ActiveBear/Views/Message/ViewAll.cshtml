@@ -20,7 +20,9 @@
             <h4>
                 <a asp-controller="ChannelAuth" asp-action="AuthUserToChannel" asp-route-id="@channel.Id">@channel.Title</a>
             </h4>
-            created by @channel.CreateUser on @channel.CreateDate.Day/@channel.CreateDate.Month/@channel.CreateDate.Year
         </div><br />
     }
 </div>
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/notification.js"></script>

@@ -48,7 +48,7 @@ namespace ActiveBear.Services
             var context = DbService.NewDbContext();
 
             var channel = await GetChannel(channelId);
-            if (channel == null) return true; // TODO: should this be false?
+            if (channel == null) return true;
 
             var channelAuths = await ChannelAuthService.ChannelAuthsFor(channel);
             var messages = await MessagesFor(channel);
@@ -59,6 +59,17 @@ namespace ActiveBear.Services
 
             var save = await context.SaveChangesAsync();
             return save == 0;
+        }
+
+        // TODO: test
+        public static async Task<bool> UserIsOwner(Guid userId, Guid channelId)
+        {
+            var channel = await GetChannel(channelId);
+            var user = await UserService.ExistingUser(userId);
+            if (channel == null || user == null)
+                return false;
+
+            return channel.CreateUser == user.Name;
         }
     }
 }
